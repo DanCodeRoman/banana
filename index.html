@@ -10,7 +10,22 @@
     * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
     body { font-family: 'Montserrat', sans-serif; overflow: hidden; color: #333; }
     h1, h2 { font-family: 'Playfair Display', serif; }
-
+    
+    /* News Reel */
+    #newsReel {
+      position: fixed; top: 0; width: 100%; height: 30px; background: #000; color: #fff;
+      overflow: hidden; z-index: 110; font-size: 16px; line-height: 30px;
+    }
+    #newsContent {
+      display: inline-block;
+      white-space: nowrap;
+      animation: scrollNews 15s linear infinite;
+    }
+    @keyframes scrollNews {
+      from { transform: translateX(100%); }
+      to { transform: translateX(-100%); }
+    }
+    
     /* Menu Styles */
     #startMenu, #storyMenu, #pauseMenu, #bossFight {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -21,6 +36,7 @@
     }
     #pauseMenu {
       background: rgba(0, 0, 0, 0.7); flex-direction: column; z-index: 1000; display: none;
+      color: #fff;
     }
     #bossFight { background: rgba(0, 0, 0, 0.9); z-index: 2000; display: none; }
     #startMenu h1, #storyMenu h1 { font-size: 60px; margin-bottom: 20px; text-shadow: 2px 2px 5px #000; }
@@ -30,42 +46,68 @@
     }
     #startMenu button:hover, #storyMenu button:hover, #pauseMenu button:hover { background: #FFB300; }
     #pauseMenu h1 { font-size: 50px; margin-bottom: 30px; text-shadow: 2px 2px 5px #000; }
-
+    
     /* Game Container & Background */
     #gameContainer {
       position: relative; width: 100%; height: 100vh;
       background: url('https://i.postimg.cc/NFKqstFM/DALL-E-2025-02-25-12-07-48-A-highly-detailed-ultra-realistic-jungle-scene-resembling-the-African.png') no-repeat center center;
       background-size: cover; overflow: hidden;
+      padding-top: 30px; /* for news reel */
     }
     #scoreBoard {
-      position: absolute; top: 10px; left: 10px; background: rgba(255, 255, 255, 0.95); padding: 10px 20px;
+      position: absolute; top: 40px; left: 10px; background: rgba(255, 255, 255, 0.95); padding: 10px 20px;
       border-radius: 8px; font-size: 24px; z-index: 500; box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
     }
+    /* Main Banana Tree */
     #bananaTree {
       position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
       width: 500px; height: 500px;
       background: url('https://static.vecteezy.com/system/resources/thumbnails/021/515/254/small_2x/green-banana-tree-on-transparent-background-file-png.png') no-repeat center bottom;
       background-size: contain; cursor: pointer;
     }
+    /* Monkey Assistants */
     #monkeyDisplay { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; z-index: 550; }
+    /* Prompt Display */
     #promptDisplay {
       position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%);
       background: rgba(0, 0, 0, 0.7); color: #fff; padding: 10px 20px; border-radius: 8px;
       font-size: 20px; display: none; z-index: 700;
     }
-
-    /* Animations */
+    /* Day/Night Overlay */
+    #dayNightOverlay {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;
+      background: #000; opacity: 0; transition: opacity 1s;
+      z-index: 800;
+    }
+    /* Rain Effects */
+    #rainContainer {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 900;
+    }
+    .raindrop {
+      position: absolute; width: 5px; height: 5px; background: blue; border-radius: 50%;
+      animation: fall 2s linear;
+      opacity: 0.7;
+    }
+    @keyframes fall {
+      from { transform: translateY(-10px); }
+      to { transform: translateY(110vh); }
+    }
+    
+    /* Banana Animation (Floating Banana) */
     .bananaAnimation {
       position: absolute; width: 100px; height: 100px;
-      background: url('https://i.imgur.com/Mudezu4.png') no-repeat center center; background-size: contain;
-      animation: floatUp 1s ease-out forwards; pointer-events: none; z-index: 600;
+      background: url('https://i.imgur.com/Mudezu4.png') no-repeat center center;
+      background-size: contain;
+      animation: floatUp 1s ease-out forwards;
+      pointer-events: none;
+      z-index: 600;
     }
     @keyframes floatUp {
       0% { opacity: 1; transform: translate(0, 0) scale(1); }
       100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.5); }
     }
-
-    /* Draggable Windows for Upgrades */
+    
+    /* Draggable Windows */
     .draggable {
       position: absolute; background: rgba(255, 255, 255, 0.95); border-radius: 8px;
       box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3); z-index: 500; width: 300px;
@@ -85,7 +127,43 @@
     }
     .draggable.collapsed .reopen-btn { display: block; }
     
-    /* Responsive Adjustments */
+    /* Planted Trees (transparent and clickable) */
+    .plantedTree {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: url('https://static.vecteezy.com/system/resources/thumbnails/021/515/254/small_2x/green-banana-tree-on-transparent-background-file-png.png') no-repeat center bottom;
+      background-size: contain;
+      opacity: 0.5;
+      cursor: pointer;
+      z-index: 400;
+    }
+    /* Planting Message */
+    #plantingMessage {
+      position: absolute; top: 100px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,0.7); color: #fff; padding: 10px; border-radius: 8px;
+      display: none; z-index: 1100;
+    }
+    
+    /* Monkey Characters Panel */
+    #monkeyCharactersPanel {
+      position: fixed;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 1100;
+    }
+    #monkeyCharactersPanel img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #FFC107;
+    }
+    
+    /* Responsive */
     @media (max-width: 768px) {
       #scoreBoard { font-size: 20px; }
       #startMenu h1, #storyMenu h1 { font-size: 40px; }
@@ -99,6 +177,11 @@
   <audio id="backgroundMusic" loop>
     <source src="placeholder.mp3" type="audio/mp3">
   </audio>
+
+  <!-- News Reel -->
+  <div id="newsReel">
+    <div id="newsContent"></div>
+  </div>
 
   <!-- Start Menu -->
   <div id="startMenu">
@@ -133,13 +216,19 @@
 
   <!-- Game Container -->
   <div id="gameContainer">
-    <div id="scoreBoard">Bananas: <span id="bananaCount">0</span> | Click Value: <span id="clickValueDisplay">1</span></div>
+    <div id="scoreBoard">
+      Bananas: <span id="bananaCount">0</span> | Click Value: <span id="clickValueDisplay">1</span> | Day: <span id="dayDisplay">1</span>
+    </div>
+    <div id="dayNightOverlay"></div>
+    <div id="rainContainer"></div>
     <div id="bananaTree"></div>
     <div id="monkeyDisplay"></div>
     <div id="promptDisplay"></div>
+    <!-- Planting Message -->
+    <div id="plantingMessage">Tree is getting planted!</div>
 
     <!-- Draggable Upgrades Panel -->
-    <div id="upgradesPanel" class="draggable" style="top: 50px; left: 20px;">
+    <div id="upgradesPanel" class="draggable" style="top: 80px; left: 20px;">
       <div class="window-header">
         Upgrades <span class="close-btn" data-target="upgradesPanel">×</span>
       </div>
@@ -148,13 +237,16 @@
     </div>
 
     <!-- Draggable Harvesting Upgrades Panel -->
-    <div id="harvestingUpgradesPanel" class="draggable" style="top: 50px; right: 20px;">
+    <div id="harvestingUpgradesPanel" class="draggable" style="top: 80px; right: 20px;">
       <div class="window-header">
         Harvesting Upgrades <span class="close-btn" data-target="harvestingUpgradesPanel">×</span>
       </div>
       <div class="window-content" id="clickUpgradesList"></div>
       <div class="reopen-btn" data-target="harvestingUpgradesPanel">Harvesting</div>
     </div>
+    
+    <!-- Monkey Characters Panel (hidden until empire grows) -->
+    <div id="monkeyCharactersPanel" style="display: none;"></div>
   </div>
 
   <script>
@@ -163,6 +255,13 @@
     ==============================*/
     let bananaCount = 0, autoProduction = 0, clickValue = 1, gamePaused = false, storyModeActive = false, costMultiplier = 1.3;
     let bossFightActive = false, bossHealth = 30, bossFightTimer;
+    let isRaining = false, rainProductionMultiplier = 0.5;
+    let dayTimer = 0, daysPassed = 0;
+    const dayLength = 180; // seconds per day
+    const dayPhaseDuration = 120; // first 120 sec = day; remaining = night
+    let isNight = false;
+    let monkeyCharactersDisplayed = false;
+    
     const upgrades = [
       { id: 1, name: 'Banana Tree', baseCost: 20, cost: 20, production: 1, quantity: 0 },
       { id: 2, name: 'Monkey Assistant', baseCost: 100, cost: 100, production: 5, quantity: 0 },
@@ -214,6 +313,100 @@
       { condition: () => upgrades[9].quantity >= 1, message: "The Monkey King bestows his regal favor.", triggered: false },
       { condition: () => bananaCount >= 10000, message: "The jungle roars with the power of your harvest.", triggered: false }
     ];
+    
+    // Define monkey business characters (funny names, placeholder images, and dialogues)
+    const monkeyCharacters = [
+      {
+        name: "Cheeky Charlie",
+        image: "https://via.placeholder.com/100?text=Cheeky+Charlie",
+        dialogues: [
+          "Hey, want a banana discount?",
+          "I sell bananas at the best price in town!",
+          "Bananas? More like bonanas, am I right?"
+        ]
+      },
+      {
+        name: "Banana Bob",
+        image: "https://via.placeholder.com/100?text=Banana+Bob",
+        dialogues: [
+          "Ever seen a banana flip? Watch this!",
+          "My banana jokes will peel you away!",
+          "I'm the top banana in this empire!"
+        ]
+      },
+      {
+        name: "Funky Frank",
+        image: "https://via.placeholder.com/100?text=Funky+Frank",
+        dialogues: [
+          "Let's boogie and trade some bananas!",
+          "Funky beats and bananas, that's the deal!",
+          "Your bananas never looked so funky!"
+        ]
+      },
+      {
+        name: "Jungle Joe",
+        image: "https://via.placeholder.com/100?text=Jungle+Joe",
+        dialogues: [
+          "In the jungle, the mighty banana roars!",
+          "Trade bananas with me and rule the jungle!",
+          "Bananas are the currency of the wild!"
+        ]
+      },
+      {
+        name: "Silly Sam",
+        image: "https://via.placeholder.com/100?text=Silly+Sam",
+        dialogues: [
+          "Did you hear the one about the banana and the monkey?",
+          "Silly bananas, silly monkeys, it's all a laugh!",
+          "Come on, join my banana circus!"
+        ]
+      }
+    ];
+    const newsDialogues = [
+      "Breaking: Monkeys protest over stale bananas!",
+      "Banana prices skyrocket as trees start whispering secrets.",
+      "Jungle in uproar: Rain delays banana shipments.",
+      "Local monkey spotted leading a banana parade.",
+      "Scientists baffled by banana flavor changes overnight.",
+      "Rain or shine, bananas still taste divine.",
+      "Monkey stock market crashes after banana overproduction.",
+      "Incredible: Banana empire expands to new treetops.",
+      "Weather alert: Sudden rain dampens monkey spirits.",
+      "Exclusive: Banana workers demand extra coconut breaks.",
+      "Breaking: Jungle news confirms: bananas are alive!",
+      "Monkey union strikes over extra slippery peels.",
+      "Mystery solved: Bananas are secretly powering the jungle.",
+      "Alert: Tropical storm predicted – bananas brace for impact.",
+      "Bizarre: Monkeys adopt a new dance after harvest.",
+      "Rumor: The Monkey King is planning a banana festival.",
+      "Jungle gossip: Banana banks now offer interest in peels.",
+      "Alert: Rainfall expected to double banana discounts.",
+      "Monkeys rejoice as the banana harvest hits record highs.",
+      "Update: Banana shipments delayed by mysterious fog.",
+      "Exclusive: New banana flavor takes the jungle by storm.",
+      "Breaking: Monkey workers celebrate a surprise holiday.",
+      "Jungle news: Local vines vote to become banana trees.",
+      "Rumor: The jungle's bananas are organizing a talent show.",
+      "Alert: Banana production takes a hit as monkeys nap.",
+      "Monkeys debate: Is the banana king really a king?",
+      "Update: Rainy days slow down the banana frenzy.",
+      "Breaking: Banana workers form a union for extra breaks.",
+      "Jungle update: Monkeys claim they’ve discovered golden bananas.",
+      "Exclusive: Banana harvest expected to be extra juicy today."
+    ];
+
+    /*==============================
+      Save & Load Game State
+    ==============================*/
+    function saveGameState() {
+      localStorage.setItem('bananaCount', bananaCount);
+      localStorage.setItem('clickValue', clickValue);
+    }
+    function loadGameState() {
+      bananaCount = parseInt(localStorage.getItem('bananaCount')) || 0;
+      clickValue = parseInt(localStorage.getItem('clickValue')) || 1;
+    }
+    window.addEventListener('load', loadGameState);
 
     /*==============================
       Upgrade Panel Initialization
@@ -222,30 +415,38 @@
       const upgradesList = document.getElementById('upgradesList');
       upgradesList.innerHTML = '';
       upgrades.forEach((upgrade, index) => {
-        let upgradeDiv = document.createElement('div');
-        upgradeDiv.style.padding = '5px';
-        upgradeDiv.style.borderBottom = '1px solid #ccc';
-        upgradeDiv.innerHTML = `<strong>${upgrade.name}</strong><br>
-                                Cost: <span class="upgradeCost">${upgrade.cost}</span><br>
-                                Owned: <span class="upgradeQuantity">${upgrade.quantity}</span><br>
-                                Production: ${upgrade.production} bananas/sec`;
-        upgradeDiv.addEventListener('click', () => purchaseUpgrade(index));
-        upgradesList.appendChild(upgradeDiv);
+        let div = document.createElement('div');
+        div.style.padding = '5px';
+        div.style.borderBottom = '1px solid #ccc';
+        div.innerHTML = `<strong>${upgrade.name}</strong><br>
+                         Cost: <span class="upgradeCost">${upgrade.cost}</span><br>
+                         Owned: <span class="upgradeQuantity">${upgrade.quantity}</span><br>
+                         Production: ${upgrade.production} bananas/sec`;
+        div.addEventListener('click', (e) => {
+          e.currentTarget.classList.add('click-animate');
+          setTimeout(() => { e.currentTarget.classList.remove('click-animate'); }, 200);
+          purchaseUpgrade(index);
+        });
+        upgradesList.appendChild(div);
       });
     }
     function initClickUpgrades() {
       const clickUpgradesList = document.getElementById('clickUpgradesList');
       clickUpgradesList.innerHTML = '';
       clickUpgrades.forEach((upgrade, index) => {
-        let upgradeDiv = document.createElement('div');
-        upgradeDiv.style.padding = '5px';
-        upgradeDiv.style.borderBottom = '1px solid #ccc';
-        upgradeDiv.innerHTML = `<strong>${upgrade.name}</strong><br>
-                                Cost: <span class="upgradeCost">${upgrade.cost}</span><br>
-                                Owned: <span class="upgradeQuantity">${upgrade.quantity}</span><br>
-                                Click Bonus: +${upgrade.bonus}`;
-        upgradeDiv.addEventListener('click', () => purchaseClickUpgrade(index));
-        clickUpgradesList.appendChild(upgradeDiv);
+        let div = document.createElement('div');
+        div.style.padding = '5px';
+        div.style.borderBottom = '1px solid #ccc';
+        div.innerHTML = `<strong>${upgrade.name}</strong><br>
+                         Cost: <span class="upgradeCost">${upgrade.cost}</span><br>
+                         Owned: <span class="upgradeQuantity">${upgrade.quantity}</span><br>
+                         Click Bonus: +${upgrade.bonus}`;
+        div.addEventListener('click', (e) => {
+          e.currentTarget.classList.add('click-animate');
+          setTimeout(() => { e.currentTarget.classList.remove('click-animate'); }, 200);
+          purchaseClickUpgrade(index);
+        });
+        clickUpgradesList.appendChild(div);
       });
     }
 
@@ -254,20 +455,22 @@
     ==============================*/
     function purchaseUpgrade(index) {
       let upgrade = upgrades[index];
-      if (bananaCount >= upgrade.cost) {
+      if(bananaCount >= upgrade.cost) {
         bananaCount -= upgrade.cost;
         upgrade.quantity++;
         autoProduction += upgrade.production;
         upgrade.cost = Math.floor(upgrade.baseCost * Math.pow(costMultiplier, upgrade.quantity));
         updateDisplay();
         initUpgrades();
-        if (upgrade.id === 1) spawnBananaTreePopup();
-        if (upgrade.id === 10 && upgrade.quantity === 1) triggerBossFight();
+        if(upgrade.id === 1) {
+          plantBananaTreeDelayed();
+        }
+        if(upgrade.id === 10 && upgrade.quantity === 1) triggerBossFight();
       }
     }
     function purchaseClickUpgrade(index) {
       let upgrade = clickUpgrades[index];
-      if (bananaCount >= upgrade.cost) {
+      if(bananaCount >= upgrade.cost) {
         bananaCount -= upgrade.cost;
         upgrade.quantity++;
         clickValue += upgrade.bonus;
@@ -279,38 +482,88 @@
     function updateDisplay() {
       document.getElementById('bananaCount').textContent = Math.floor(bananaCount);
       document.getElementById('clickValueDisplay').textContent = clickValue;
+      document.getElementById('dayDisplay').textContent = daysPassed + 1;
       updateMonkeyDisplay();
       checkPrompts();
+      saveGameState();
+      updateMonkeyCharacters(); // update empire characters when needed
     }
     function updateMonkeyDisplay() {
       const monkeyDisplay = document.getElementById('monkeyDisplay');
+      if(isRaining || isNight) { monkeyDisplay.innerHTML = ""; return; }
       monkeyDisplay.innerHTML = "";
-      for (let i = 0; i < upgrades[1].quantity; i++) {
+      for(let i = 0; i < upgrades[1].quantity; i++) {
         let img = document.createElement('img');
         img.src = "https://i.pinimg.com/474x/da/0f/17/da0f17568351694b550182d8caac5c00.jpg";
-        img.style.width = "50px"; img.style.height = "50px"; img.style.borderRadius = "50%"; img.style.border = "2px solid #fff";
+        img.style.width = "50px"; img.style.height = "50px"; 
+        img.style.borderRadius = "50%"; img.style.border = "2px solid #fff";
         if(i > 0) img.style.marginLeft = "-15px";
         monkeyDisplay.appendChild(img);
       }
     }
-    function spawnBananaTreePopup() {
-      const rect = document.getElementById('bananaTree').getBoundingClientRect();
-      let popup = document.createElement('img');
-      popup.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5vNw46OQzsVKOijQ80yOkjH7Hllf2i4i5ZQ&s";
-      popup.style.position = 'absolute';
-      popup.style.width = '100px';
-      popup.style.left = (rect.left + rect.width/2 - 50) + 'px';
-      popup.style.top = (rect.top + rect.height/2 - 50) + 'px';
-      popup.style.opacity = 1;
-      popup.style.transition = "opacity 2s ease-out";
-      document.getElementById('gameContainer').appendChild(popup);
-      setTimeout(() => { popup.style.opacity = 0; }, 1000);
-      setTimeout(() => { popup.remove(); }, 3000);
+    
+    /*==============================
+      New Banana Tree Planting Functions
+    ==============================*/
+    let pendingTreePlantings = 0;
+    function plantBananaTreeDelayed() {
+      pendingTreePlantings++;
+      updatePlantingMessage();
+      const msgEl = document.getElementById('plantingMessage');
+      if(msgEl.style.display === 'none' || msgEl.style.display === '') {
+        msgEl.style.display = 'block';
+        msgEl.style.opacity = 1;
+      }
+      setTimeout(() => {
+        spawnPlantedTree();
+        pendingTreePlantings--;
+        updatePlantingMessage();
+        if(pendingTreePlantings <= 0) {
+          fadeOutPlantingMessage();
+        }
+      }, 10000);
+    }
+    function updatePlantingMessage() {
+      const msgEl = document.getElementById('plantingMessage');
+      msgEl.textContent = pendingTreePlantings > 1 ? "Trees are getting planted!" : "Tree is getting planted!";
+    }
+    function fadeOutPlantingMessage() {
+      const msgEl = document.getElementById('plantingMessage');
+      msgEl.style.transition = 'opacity 2s';
+      msgEl.style.opacity = 0;
+      setTimeout(() => { msgEl.style.display = 'none'; }, 2000);
+    }
+    function spawnPlantedTree() {
+      let tree = document.createElement('div');
+      tree.className = 'plantedTree';
+      const container = document.getElementById('gameContainer');
+      const containerRect = container.getBoundingClientRect();
+      let maxLeft = containerRect.width - 500;
+      let maxTop = containerRect.height - 500;
+      let randomLeft = Math.random() * maxLeft;
+      let randomTop = Math.random() * maxTop;
+      tree.style.left = randomLeft + 'px';
+      tree.style.top = randomTop + 'px';
+      tree.addEventListener('click', function(e) {
+        if(!gamePaused && !bossFightActive) {
+          tree.classList.add('click-animate');
+          setTimeout(() => { tree.classList.remove('click-animate'); }, 200);
+          bananaCount += clickValue;
+          updateDisplay();
+          animateBananaHarvest(e);
+        }
+      });
+      container.appendChild(tree);
     }
     function animateBananaHarvest(event) {
-      const rect = document.getElementById('bananaTree').getBoundingClientRect();
-      let originX = event ? event.clientX - 50 : rect.left + rect.width/2 - 50;
-      let originY = event ? event.clientY - 50 : rect.top + rect.height/2 - 50;
+      let targetRect;
+      if(event && event.currentTarget && event.currentTarget.classList.contains('plantedTree')) {
+        targetRect = event.currentTarget.getBoundingClientRect();
+      } else {
+        targetRect = document.getElementById('bananaTree').getBoundingClientRect();
+      }
+      let originX = event ? event.clientX - 50 : targetRect.left + targetRect.width / 2 - 50;
+      let originY = event ? event.clientY - 50 : targetRect.top + targetRect.height / 2 - 50;
       let banana = document.createElement('div');
       banana.className = 'bananaAnimation';
       banana.style.left = originX + 'px';
@@ -322,7 +575,9 @@
       document.getElementById('gameContainer').appendChild(banana);
       setTimeout(() => { banana.remove(); }, 1000);
     }
+    
     function animateMonkeyAssistants() {
+      if(isRaining || isNight) return;
       const monkeyDisplay = document.getElementById('monkeyDisplay');
       Array.from(monkeyDisplay.children).forEach(img => {
         let rect = img.getBoundingClientRect();
@@ -337,7 +592,7 @@
         setTimeout(() => { banana.remove(); }, 1000);
       });
     }
-
+    
     /*==============================
       Boss Fight Functions
     ==============================*/
@@ -350,41 +605,117 @@
       bossFightTimer = setTimeout(() => { if(bossFightActive) endBossFight(false); }, 10000);
     }
     function handleBossClick() {
-      if (!bossFightActive) return;
+      if(!bossFightActive) return;
       bossHealth--;
       document.getElementById('bossHealthDisplay').textContent = "Health: " + bossHealth;
-      if (bossHealth <= 0) endBossFight(true);
+      if(bossHealth <= 0) endBossFight(true);
     }
     function endBossFight(success) {
       bossFightActive = false;
       clearTimeout(bossFightTimer);
       document.getElementById('bossFight').style.display = 'none';
       document.getElementById('gameContainer').style.display = 'block';
-      displayPrompt(success 
-        ? "You defeated the Monkey King! He is now your slave and produces bananas for you!"
-        : "You failed to defeat the Monkey King."
-      );
+      displayPrompt(success ? "You defeated the Monkey King! He is now your slave and produces bananas for you!" : "You failed to defeat the Monkey King.");
     }
     document.getElementById('bossFight').addEventListener('click', handleBossClick);
 
     /*==============================
-      Game Interactions
+      Game Interactions & Intervals
     ==============================*/
-    document.getElementById('bananaTree').addEventListener('click', function(e) {
-      if (!gamePaused && !bossFightActive) {
+    const mainTree = document.getElementById('bananaTree');
+    mainTree.addEventListener('click', function(e) {
+      if(!gamePaused && !bossFightActive) {
+        mainTree.classList.add('click-animate');
+        setTimeout(() => { mainTree.classList.remove('click-animate'); }, 200);
         bananaCount += clickValue;
         updateDisplay();
         animateBananaHarvest(e);
       }
     });
     setInterval(function() {
-      if (!gamePaused && !bossFightActive) {
-        bananaCount += autoProduction;
+      if(!gamePaused && !bossFightActive) {
+        let productionMultiplier = 1;
+        if(isNight) productionMultiplier *= 0.5;
+        if(isRaining) productionMultiplier *= rainProductionMultiplier;
+        bananaCount += autoProduction * productionMultiplier;
         updateDisplay();
-        if (autoProduction > 0) animateBananaHarvest();
       }
     }, 1000);
 
+    /*==============================
+      Day/Night Cycle
+    ==============================*/
+    function updateDayNightCycle() {
+      dayTimer++;
+      if(dayTimer >= dayLength) { daysPassed++; dayTimer = 0; }
+      isNight = dayTimer >= dayPhaseDuration;
+      document.getElementById('dayNightOverlay').style.opacity = isNight ? 0.5 : 0;
+      updateDisplay();
+    }
+    setInterval(updateDayNightCycle, 1000);
+
+    /*==============================
+      Rain Event
+    ==============================*/
+    function spawnRaindrop() {
+      let drop = document.createElement('div');
+      drop.className = 'raindrop';
+      drop.style.left = Math.random() * window.innerWidth + 'px';
+      drop.style.top = '-10px';
+      document.getElementById('rainContainer').appendChild(drop);
+      setTimeout(() => { drop.remove(); }, 2000);
+    }
+    function startRain() {
+      isRaining = true;
+      rainInterval = setInterval(spawnRaindrop, 300);
+      setTimeout(endRain, 15000);
+    }
+    function endRain() {
+      isRaining = false;
+      clearInterval(rainInterval);
+    }
+    function checkRainChance() {
+      if(Math.random() < 0.2 && !isRaining) startRain();
+    }
+    setInterval(checkRainChance, 30000);
+
+    /*==============================
+      News Reel
+    ==============================*/
+    let newsIndex = 0;
+    function updateNewsReel() {
+      const newsContent = document.getElementById('newsContent');
+      newsContent.innerText = newsDialogues[newsIndex];
+      newsIndex = (newsIndex + 1) % newsDialogues.length;
+    }
+    updateNewsReel();
+    setInterval(updateNewsReel, 15000);
+
+    /*==============================
+      Monkey Characters (Empire Business)
+    ==============================*/
+    function updateMonkeyCharacters() {
+      // Show characters once bananaCount reaches 5000 (if not already displayed)
+      if(bananaCount >= 5000 && !monkeyCharactersDisplayed) {
+        const panel = document.getElementById('monkeyCharactersPanel');
+        panel.style.display = 'flex';
+        monkeyCharacters.forEach(monkey => {
+          let img = document.createElement('img');
+          img.src = monkey.image;
+          img.title = monkey.name;
+          img.addEventListener('click', () => {
+            const dialogue = monkey.dialogues[Math.floor(Math.random() * monkey.dialogues.length)];
+            displayPrompt(`${monkey.name}: ${dialogue}`);
+          });
+          panel.appendChild(img);
+        });
+        monkeyCharactersDisplayed = true;
+      }
+    }
+    
+    /*==============================
+      Story Mode & Menu Interactions
+    ==============================*/
     const storyPages = [
       { text: `<h1>Rise of the Bananas</h1><p>In the heart of a mysterious jungle, legends speak of a power hidden within the golden fruit. You are destined to harness this power.</p>` },
       { text: `<p>The monkeys, guardians of the ancient groves, have long awaited a champion who can unite their strength with the magic of the bananas.</p>` },
@@ -398,7 +729,7 @@
     function displayStoryPage() {
       const container = document.getElementById('storyContainer');
       container.innerHTML = storyPages[currentStoryPage].text;
-      if (currentStoryPage === storyPages.length - 1) {
+      if(currentStoryPage === storyPages.length - 1) {
         document.getElementById('beginHarvestButton').addEventListener('click', function() {
           document.getElementById('storyMenu').style.display = 'none';
           startGame();
@@ -406,13 +737,13 @@
       }
     }
     function choosePath(path) {
-      if (path === 'swift') { costMultiplier = 1.4; clickValue += 2; }
-      else if (path === 'mighty') { costMultiplier = 1.6; autoProduction += 10; }
+      if(path === 'swift') { costMultiplier = 1.4; clickValue += 2; }
+      else if(path === 'mighty') { costMultiplier = 1.6; autoProduction += 10; }
       currentStoryPage++;
       displayStoryPage();
     }
     document.getElementById('storyNextButton').addEventListener('click', function() {
-      if (currentStoryPage < storyPages.length - 1) { currentStoryPage++; displayStoryPage(); }
+      if(currentStoryPage < storyPages.length - 1) { currentStoryPage++; displayStoryPage(); }
     });
     document.getElementById('backToMainMenu').addEventListener('click', function() {
       document.getElementById('storyMenu').style.display = 'none';
@@ -437,8 +768,8 @@
       location.reload();
     });
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') togglePause();
-      if (e.key === 'd' || e.key === 'D') debugLog();
+      if(e.key === 'Escape') togglePause();
+      if(e.key === 'd' || e.key === 'D') debugLog();
     });
     function togglePause() {
       gamePaused = !gamePaused;
@@ -455,7 +786,7 @@
     }
     function checkPrompts() {
       storyPrompts.forEach(promptObj => {
-        if (!promptObj.triggered && promptObj.condition()) {
+        if(!promptObj.triggered && promptObj.condition()) {
           promptObj.triggered = true;
           displayPrompt(promptObj.message);
         }
@@ -468,14 +799,14 @@
       document.getElementById('backgroundMusic').play();
     }
     function gameLoop() {
-      if (!gamePaused) { /* future updates can be added here */ }
+      if(!gamePaused) { /* future updates */ }
       requestAnimationFrame(gameLoop);
     }
     requestAnimationFrame(gameLoop);
     function debugLog() {
       console.log("Banana Count:", bananaCount, "Auto Production:", autoProduction, "Click Value:", clickValue, "Upgrades:", upgrades, "Click Upgrades:", clickUpgrades);
     }
-
+    
     /*==============================
       Draggable & Collapsible Windows
     ==============================*/
@@ -488,7 +819,7 @@
         offsetY = e.clientY - el.getBoundingClientRect().top;
       });
       document.addEventListener('mousemove', (e) => {
-        if (isDragging) {
+        if(isDragging) {
           el.style.left = (e.clientX - offsetX) + 'px';
           el.style.top = (e.clientY - offsetY) + 'px';
         }
@@ -496,7 +827,6 @@
       document.addEventListener('mouseup', () => { isDragging = false; });
     }
     document.querySelectorAll('.draggable').forEach(makeDraggable);
-    // Close (collapse) and reopen (expand) logic
     document.querySelectorAll('.close-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const panel = document.getElementById(btn.getAttribute('data-target'));
