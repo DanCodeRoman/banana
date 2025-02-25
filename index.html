@@ -1,1 +1,1327 @@
-https://static.vecteezy.com/system/resources/thumbnails/021/515/254/small_2x/green-banana-tree-on-transparent-background-file-png.png
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bananas & Monkeys: Ultimate Harvest</title>
+  <style>
+    /* ===================================================================
+       Global Styles & Non-selectable Text
+       =================================================================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+      overflow: hidden;
+      color: #333;
+    }
+    
+    h1, h2 {
+      font-family: 'Playfair Display', serif;
+    }
+    
+    /* ===================================================================
+       Start Menu & Story Mode Menu Styles
+       =================================================================== */
+    #startMenu, #storyMenu {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    /* Story Mode container now has a dark background for contrast */
+    #storyContainer {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background: rgba(34,34,34,0.95);
+      border-radius: 8px;
+      box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+      color: #fff;
+    }
+    
+    #startMenu h1, #storyMenu h1 {
+      font-size: 60px;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 5px #000;
+    }
+    
+    #startMenu button, #storyMenu button {
+      padding: 15px 30px;
+      font-size: 24px;
+      border: none;
+      background: #FFC107;
+      color: #000;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin: 10px;
+      font-weight: 600;
+    }
+    
+    #startMenu button:hover, #storyMenu button:hover {
+      background: #FFB300;
+    }
+    
+    /* ===================================================================
+       Pause Menu Styles
+       =================================================================== */
+    #pauseMenu {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 900;
+    }
+    
+    #pauseMenu h1 {
+      font-size: 50px;
+      margin-bottom: 30px;
+      text-shadow: 2px 2px 5px #000;
+    }
+    
+    #resumeButton {
+      padding: 12px 25px;
+      font-size: 22px;
+      border: none;
+      background: #8BC34A;
+      color: #fff;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      font-weight: 600;
+    }
+    
+    #resumeButton:hover {
+      background: #7CB342;
+    }
+    
+    /* ===================================================================
+       Game Container & Background (Jungle Image)
+       =================================================================== */
+    #gameContainer {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      background: url('https://i.postimg.cc/NFKqstFM/DALL-E-2025-02-25-12-07-48-A-highly-detailed-ultra-realistic-jungle-scene-resembling-the-African.png') no-repeat center center;
+      background-size: cover;
+    }
+    
+    #scoreBoard {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 24px;
+      z-index: 500;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* ===================================================================
+       Banana Tree Styles (Main Tree)
+       =================================================================== */
+    #bananaTree {
+      position: absolute;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 500px;
+      height: 500px;
+      background: url('https://static.vecteezy.com/system/resources/thumbnails/021/515/254/small_2x/green-banana-tree-on-transparent-background-file-png.png') no-repeat center bottom;
+      background-size: contain;
+      cursor: pointer;
+    }
+    
+    /* ===================================================================
+       Monkey Display (Monkey Assistant Icons Under the Tree)
+       =================================================================== */
+    #monkeyDisplay {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      z-index: 550;
+    }
+    
+    /* ===================================================================
+       Prompt Display (Interactive Story/Gameplay Prompts)
+       =================================================================== */
+    #promptDisplay {
+      position: absolute;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 20px;
+      display: none;
+      z-index: 700;
+    }
+    
+    /* ===================================================================
+       Banana Harvest Animation Styles
+       =================================================================== */
+    .bananaAnimation {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      background: url('https://i.imgur.com/Mudezu4.png') no-repeat center center;
+      background-size: contain;
+      animation: floatUp 1s ease-out forwards;
+      pointer-events: none;
+      z-index: 600;
+    }
+    
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(var(--dx), var(--dy)) scale(1.5);
+      }
+    }
+    
+    /* ===================================================================
+       Monkey Assistant Animation Styles (for individual monkey prompts)
+       =================================================================== */
+    .monkeyAnimation {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      opacity: 0;
+      transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+      z-index: 650;
+    }
+    
+    /* ===================================================================
+       Upgrades Panel Styles (Production Upgrades)
+       =================================================================== */
+    #upgradesPanel {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 300px;
+      max-height: 90vh;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 15px;
+      border-radius: 8px;
+      overflow-y: auto;
+      z-index: 500;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    #upgradesPanel h2 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    
+    .upgradeItem {
+      background: #fff;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      text-align: center;
+      font-weight: 600;
+    }
+    
+    .upgradeItem:hover {
+      background: #f9f9f9;
+      transform: scale(1.02);
+    }
+    
+    .upgradeItem strong {
+      font-size: 20px;
+      color: #333;
+    }
+    
+    .upgradeCost {
+      color: #E91E63;
+      font-weight: 600;
+    }
+    
+    .upgradeQuantity {
+      color: #3F51B5;
+      font-weight: 600;
+    }
+    
+    /* ===================================================================
+       Harvesting Upgrades Panel Styles (Click Upgrades)
+       =================================================================== */
+    #harvestingUpgradesPanel {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      width: 350px;
+      max-height: 40vh;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 15px;
+      border-radius: 8px;
+      overflow-y: auto;
+      z-index: 500;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    #harvestingUpgradesPanel h2 {
+      font-size: 26px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    
+    .clickUpgradeItem {
+      background: #fff;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      text-align: center;
+      font-weight: 600;
+    }
+    
+    .clickUpgradeItem:hover {
+      background: #f9f9f9;
+      transform: scale(1.02);
+    }
+    
+    .clickUpgradeItem strong {
+      font-size: 20px;
+      color: #333;
+    }
+    
+    /* ===================================================================
+       Boss Fight Overlay Styles
+       =================================================================== */
+    #bossFight {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+    
+    #bossContent {
+      text-align: center;
+      color: #fff;
+    }
+    
+    #bossContent img {
+      width: 400px;
+      height: auto;
+    }
+    
+    #bossHealthDisplay {
+      font-size: 32px;
+      margin-top: 20px;
+    }
+    
+    /* ===================================================================
+       Responsive Adjustments
+       =================================================================== */
+    @media (max-width: 768px) {
+      #upgradesPanel, #harvestingUpgradesPanel {
+        width: 90%;
+        left: 5%;
+        right: 5%;
+        top: auto;
+        bottom: 10px;
+      }
+      #scoreBoard {
+        font-size: 20px;
+      }
+      #startMenu h1, #storyMenu h1 {
+        font-size: 40px;
+      }
+      #pauseMenu h1 {
+        font-size: 35px;
+      }
+    }
+    
+    /* ===================================================================
+       Extra Filler Lines for Clarity
+       =================================================================== */
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  </style>
+</head>
+<body>
+  <!-- ===================================================================
+       Start Menu
+       =================================================================== -->
+  <div id="startMenu">
+    <h1>Bananas & Monkeys</h1>
+    <button id="startButton">Start Game</button>
+    <button id="storyModeButton">Story Mode</button>
+  </div>
+  
+  <!-- ===================================================================
+       Story Mode Menu (Interactive Story)
+       =================================================================== -->
+  <div id="storyMenu" style="display: none;">
+    <div id="storyContainer">
+      <!-- Story text will be injected here by JS -->
+    </div>
+    <div style="margin-top:20px;">
+      <button id="storyNextButton">Next</button>
+      <button id="backToMainMenu">Back</button>
+    </div>
+  </div>
+  
+  <!-- ===================================================================
+       Pause Menu
+       =================================================================== -->
+  <div id="pauseMenu" style="display: none;">
+    <h1>Paused</h1>
+    <button id="resumeButton">Resume Game</button>
+  </div>
+  
+  <!-- ===================================================================
+       Boss Fight Overlay
+       =================================================================== -->
+  <div id="bossFight">
+    <div id="bossContent">
+      <img id="bossImage" src="https://via.placeholder.com/400x400?text=Monkey+King" alt="Monkey King">
+      <div id="bossHealthDisplay">Health: 30</div>
+    </div>
+  </div>
+  
+  <!-- ===================================================================
+       Game Container
+       =================================================================== -->
+  <div id="gameContainer">
+    <!-- Score Board -->
+    <div id="scoreBoard">
+      Bananas: <span id="bananaCount">0</span> | Click Value: <span id="clickValueDisplay">1</span>
+    </div>
+    
+    <!-- Banana Tree (click here for banana harvesting) -->
+    <div id="bananaTree"></div>
+    
+    <!-- Monkey Display (Monkey Assistant Icons Under the Tree) -->
+    <div id="monkeyDisplay"></div>
+    
+    <!-- Prompt Display (for interactive game prompts) -->
+    <div id="promptDisplay"></div>
+    
+    <!-- Production Upgrades Panel -->
+    <div id="upgradesPanel">
+      <h2>Upgrades</h2>
+      <div id="upgradesList">
+        <!-- Production upgrade items will be dynamically inserted here -->
+      </div>
+    </div>
+    
+    <!-- Harvesting Upgrades Panel (Click Upgrades) -->
+    <div id="harvestingUpgradesPanel">
+      <h2>Harvesting Upgrades</h2>
+      <div id="clickUpgradesList">
+        <!-- Click upgrade items will be dynamically inserted here -->
+      </div>
+    </div>
+  </div>
+  
+  <!-- ===================================================================
+       JavaScript Game Logic
+       =================================================================== -->
+  <script>
+    // ===================================================================
+    // Bananas & Monkeys: Ultimate Harvest Game
+    // ===================================================================
+    
+    // -------------------------------
+    // Game State Variables
+    // -------------------------------
+    let bananaCount = 0;
+    let autoProduction = 0;
+    let clickValue = 1;
+    let gamePaused = false;
+    let storyModeActive = false;
+    let costMultiplier = 1.3; // Default multiplier (upgrades are harder)
+    
+    // Boss Fight Variables
+    let bossFightActive = false;
+    let bossHealth = 30;
+    let bossFightTimer;
+    
+    // -------------------------------
+    // Production Upgrades Array (Auto Production Upgrades)
+    // -------------------------------
+    const upgrades = [
+      { id: 1, name: 'Banana Tree', baseCost: 20, cost: 20, production: 1, quantity: 0 },
+      { id: 2, name: 'Monkey Assistant', baseCost: 100, cost: 100, production: 5, quantity: 0 },
+      { id: 3, name: 'Banana Plantation', baseCost: 400, cost: 400, production: 20, quantity: 0 },
+      { id: 4, name: 'Monkey Farm', baseCost: 2000, cost: 2000, production: 100, quantity: 0 },
+      { id: 5, name: 'Banana Shipping', baseCost: 10000, cost: 10000, production: 500, quantity: 0 },
+      { id: 6, name: 'Monkey Laboratory', baseCost: 40000, cost: 40000, production: 2000, quantity: 0 },
+      { id: 7, name: 'Banana Bank', baseCost: 200000, cost: 200000, production: 10000, quantity: 0 },
+      { id: 8, name: 'Monkey Convention', baseCost: 1000000, cost: 1000000, production: 50000, quantity: 0 },
+      { id: 9, name: 'Banana Empire', baseCost: 4000000, cost: 4000000, production: 200000, quantity: 0 },
+      { id: 10, name: 'Monkey King', baseCost: 20000000, cost: 20000000, production: 1000000, quantity: 0 }
+    ];
+    
+    // -------------------------------
+    // Click (Harvesting) Upgrades Array
+    // -------------------------------
+    const clickUpgrades = [
+      { id: 1, name: 'Click Booster', baseCost: 30, cost: 30, bonus: 1, quantity: 0 },
+      { id: 2, name: 'Golden Glove', baseCost: 200, cost: 200, bonus: 3, quantity: 0 },
+      { id: 3, name: 'Turbo Fingers', baseCost: 1000, cost: 1000, bonus: 5, quantity: 0 },
+      { id: 4, name: 'Banana Handshake', baseCost: 5000, cost: 5000, bonus: 10, quantity: 0 },
+      { id: 5, name: 'Hyper Clicker', baseCost: 20000, cost: 20000, bonus: 25, quantity: 0 }
+    ];
+    
+    // -------------------------------
+    // Story Prompts Array (30 interactive messages)
+    // -------------------------------
+    const storyPrompts = [
+      { condition: () => upgrades[1].quantity >= 1, message: "A lone monkey shows interest.", triggered: false },
+      { condition: () => upgrades[1].quantity >= 2, message: "More monkeys are gathering around you.", triggered: false },
+      { condition: () => upgrades[1].quantity >= 3, message: "The monkeys seem curious about your power.", triggered: false },
+      { condition: () => upgrades[1].quantity >= 4, message: "The monkeys are starting to chatter excitedly.", triggered: false },
+      { condition: () => upgrades[1].quantity >= 5, message: "The monkeys like you a lot!", triggered: false },
+      { condition: () => upgrades[1].quantity >= 6, message: "The monkey crowd grows stronger.", triggered: false },
+      { condition: () => upgrades[1].quantity >= 7, message: "A small monkey parade marches by.", triggered: false },
+      { condition: () => upgrades[1].quantity >= 8, message: "Monkeys are playing in your honor.", triggered: false },
+      { condition: () => upgrades[1].quantity >= 9, message: "The jungle resounds with monkey cheers.", triggered: false },
+      { condition: () => upgrades[1].quantity >= 10, message: "A monkey king nods in approval.", triggered: false },
+      { condition: () => bananaCount >= 100, message: "Your banana harvest is growing steadily.", triggered: false },
+      { condition: () => bananaCount >= 250, message: "Bananas overflow as your empire expands.", triggered: false },
+      { condition: () => bananaCount >= 500, message: "The jungle whispers of your bounty.", triggered: false },
+      { condition: () => bananaCount >= 750, message: "Golden bananas glisten in the sun.", triggered: false },
+      { condition: () => bananaCount >= 1000, message: "A banana bonanza shakes the forest.", triggered: false },
+      { condition: () => clickValue >= 5, message: "Your nimble fingers work like magic.", triggered: false },
+      { condition: () => clickValue >= 10, message: "Every click now yields a cascade of bananas.", triggered: false },
+      { condition: () => autoProduction >= 50, message: "Machines of monkey labor are at work.", triggered: false },
+      { condition: () => autoProduction >= 100, message: "Your production towers over the jungle.", triggered: false },
+      { condition: () => autoProduction >= 250, message: "Even the trees seem to bend to your will.", triggered: false },
+      { condition: () => upgrades[0].quantity >= 5, message: "Your banana trees flourish with vitality.", triggered: false },
+      { condition: () => upgrades[2].quantity >= 3, message: "Plantations spread like a golden sea.", triggered: false },
+      { condition: () => upgrades[3].quantity >= 2, message: "Monkey farms hum with activity.", triggered: false },
+      { condition: () => upgrades[4].quantity >= 1, message: "Banana shipping lines deliver riches.", triggered: false },
+      { condition: () => upgrades[5].quantity >= 1, message: "The laboratories churn out scientific marvels.", triggered: false },
+      { condition: () => upgrades[6].quantity >= 1, message: "Banks of bananas boost your economy.", triggered: false },
+      { condition: () => upgrades[7].quantity >= 1, message: "Conventions celebrate your visionary style.", triggered: false },
+      { condition: () => upgrades[8].quantity >= 1, message: "An empire of bananas is in the making.", triggered: false },
+      { condition: () => upgrades[9].quantity >= 1, message: "The Monkey King bestows his regal favor.", triggered: false },
+      { condition: () => bananaCount >= 10000, message: "The jungle roars with the power of your harvest.", triggered: false }
+    ];
+    
+    // -------------------------------
+    // Initialize Production Upgrades Panel
+    // -------------------------------
+    function initUpgrades() {
+      const upgradesList = document.getElementById('upgradesList');
+      upgradesList.innerHTML = ''; // Clear current list
+      
+      upgrades.forEach((upgrade, index) => {
+        let upgradeDiv = document.createElement('div');
+        upgradeDiv.className = 'upgradeItem';
+        upgradeDiv.id = 'upgrade-' + upgrade.id;
+        let upgradeInfo = `<strong>${upgrade.name}</strong><br>
+                           Cost: <span class="upgradeCost">${upgrade.cost}</span><br>
+                           Owned: <span class="upgradeQuantity">${upgrade.quantity}</span><br>
+                           Production: ${upgrade.production} bananas/sec`;
+        // If this is the Banana Plantation upgrade (id=3), add an image (replace URL as needed)
+        if (upgrade.id === 3) {
+          upgradeInfo += `<br><img src="https://via.placeholder.com/50x50?text=Plant" style="width:50px;">`;
+        }
+        upgradeDiv.innerHTML = upgradeInfo;
+        
+        upgradeDiv.addEventListener('click', function() {
+          purchaseUpgrade(index);
+        });
+        upgradesList.appendChild(upgradeDiv);
+      });
+    }
+    
+    // -------------------------------
+    // Initialize Harvesting (Click) Upgrades Panel
+    // -------------------------------
+    function initClickUpgrades() {
+      const clickUpgradesList = document.getElementById('clickUpgradesList');
+      clickUpgradesList.innerHTML = ''; // Clear current list
+      
+      clickUpgrades.forEach((upgrade, index) => {
+        let upgradeDiv = document.createElement('div');
+        upgradeDiv.className = 'clickUpgradeItem';
+        upgradeDiv.id = 'clickUpgrade-' + upgrade.id;
+        let upgradeInfo = `<strong>${upgrade.name}</strong><br>
+                           Cost: <span class="upgradeCost">${upgrade.cost}</span><br>
+                           Owned: <span class="upgradeQuantity">${upgrade.quantity}</span><br>
+                           Click Bonus: +${upgrade.bonus}`;
+        upgradeDiv.innerHTML = upgradeInfo;
+        
+        upgradeDiv.addEventListener('click', function() {
+          purchaseClickUpgrade(index);
+        });
+        clickUpgradesList.appendChild(upgradeDiv);
+      });
+    }
+    
+    // -------------------------------
+    // Purchase Production Upgrade Function
+    // -------------------------------
+    function purchaseUpgrade(index) {
+      let upgrade = upgrades[index];
+      if (bananaCount >= upgrade.cost) {
+        bananaCount -= upgrade.cost;
+        upgrade.quantity++;
+        autoProduction += upgrade.production;
+        upgrade.cost = Math.floor(upgrade.baseCost * Math.pow(costMultiplier, upgrade.quantity));
+        updateDisplay();
+        initUpgrades();
+        // If Banana Tree (id 1) is purchased, spawn a small pop-up tree
+        if (upgrade.id === 1) {
+          spawnBananaTreePopup();
+        }
+        // If Monkey King (id 10) is purchased for the first time, trigger boss fight
+        if (upgrade.id === 10 && upgrade.quantity === 1) {
+          triggerBossFight();
+        }
+      }
+    }
+    
+    // -------------------------------
+    // Purchase Click Upgrade Function
+    // -------------------------------
+    function purchaseClickUpgrade(index) {
+      let upgrade = clickUpgrades[index];
+      if (bananaCount >= upgrade.cost) {
+        bananaCount -= upgrade.cost;
+        upgrade.quantity++;
+        clickValue += upgrade.bonus;
+        upgrade.cost = Math.floor(upgrade.baseCost * Math.pow(costMultiplier, upgrade.quantity));
+        updateDisplay();
+        initClickUpgrades();
+      }
+    }
+    
+    // -------------------------------
+    // Update Display Function
+    // -------------------------------
+    function updateDisplay() {
+      document.getElementById('bananaCount').textContent = Math.floor(bananaCount);
+      document.getElementById('clickValueDisplay').textContent = clickValue;
+      updateMonkeyDisplay();
+      checkPrompts();
+    }
+    
+    // -------------------------------
+    // Update Monkey Display Function
+    // -------------------------------
+    function updateMonkeyDisplay() {
+      const monkeyDisplay = document.getElementById('monkeyDisplay');
+      monkeyDisplay.innerHTML = "";
+      let monkeyCount = upgrades[1].quantity;
+      for (let i = 0; i < monkeyCount; i++) {
+        let monkeyImg = document.createElement('img');
+        monkeyImg.src = "https://i.pinimg.com/474x/da/0f/17/da0f17568351694b550182d8caac5c00.jpg";
+        monkeyImg.style.width = "50px";
+        monkeyImg.style.height = "50px";
+        monkeyImg.style.borderRadius = "50%";
+        monkeyImg.style.border = "2px solid #fff";
+        if (i > 0) {
+          monkeyImg.style.marginLeft = "-15px";
+        }
+        monkeyDisplay.appendChild(monkeyImg);
+      }
+    }
+    
+    // -------------------------------
+    // Spawn a Small Banana Tree Popup
+    // -------------------------------
+    function spawnBananaTreePopup() {
+      const mainTree = document.getElementById('bananaTree');
+      const rect = mainTree.getBoundingClientRect();
+      let popup = document.createElement('img');
+      // Use the same image as the main banana tree (strip url() if needed)
+      popup.src = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5vNw46OQzsVKOijQ80yOkjH7Hllf2i4i5ZQ&s";
+      popup.style.position = 'absolute';
+      popup.style.width = '100px';
+      popup.style.height = 'auto';
+      let centerX = rect.left + rect.width / 2;
+      let centerY = rect.top + rect.height / 2;
+      let randomX = centerX + (Math.random() * 300 - 150) - 50;
+      let randomY = centerY + (Math.random() * 300 - 150) - 50;
+      popup.style.left = randomX + 'px';
+      popup.style.top = randomY + 'px';
+      popup.style.opacity = 1;
+      popup.style.transition = "opacity 2s ease-out";
+      document.getElementById('gameContainer').appendChild(popup);
+      setTimeout(() => {
+        popup.style.opacity = 0;
+      }, 1000);
+      setTimeout(() => {
+        popup.remove();
+      }, 3000);
+    }
+    
+    // -------------------------------
+    // Animate Banana Harvest Function
+    // -------------------------------
+    function animateBananaHarvest(event) {
+      const tree = document.getElementById('bananaTree');
+      const rect = tree.getBoundingClientRect();
+      let originX, originY;
+      if (event) {
+        originX = event.clientX - 50;
+        originY = event.clientY - 50;
+      } else {
+        originX = rect.left + rect.width / 2 - 50;
+        originY = rect.top + rect.height / 2 - 50;
+      }
+      
+      let banana = document.createElement('div');
+      banana.className = 'bananaAnimation';
+      banana.style.left = originX + 'px';
+      banana.style.top = originY + 'px';
+      
+      let dx = Math.floor(Math.random() * 200 - 100);
+      let dy = Math.floor(Math.random() * -150 - 50);
+      banana.style.setProperty('--dx', dx + 'px');
+      banana.style.setProperty('--dy', dy + 'px');
+      
+      document.getElementById('gameContainer').appendChild(banana);
+      setTimeout(() => {
+        banana.remove();
+      }, 1000);
+    }
+    
+    // -------------------------------
+    // Animate Each Monkey Assistant (for production)
+    // -------------------------------
+    function animateMonkeyAssistants() {
+      const monkeyDisplay = document.getElementById('monkeyDisplay');
+      Array.from(monkeyDisplay.children).forEach(monkeyImg => {
+        let rect = monkeyImg.getBoundingClientRect();
+        let banana = document.createElement('div');
+        banana.className = 'bananaAnimation';
+        banana.style.width = "50px";
+        banana.style.height = "50px";
+        banana.style.left = rect.left + "px";
+        banana.style.top = rect.top + "px";
+        let dx = Math.floor(Math.random() * 50 - 25);
+        let dy = Math.floor(Math.random() * -50 - 25);
+        banana.style.setProperty('--dx', dx + 'px');
+        banana.style.setProperty('--dy', dy + 'px');
+        document.getElementById('gameContainer').appendChild(banana);
+        setTimeout(() => {
+          banana.remove();
+        }, 1000);
+      });
+    }
+    
+    // -------------------------------
+    // Periodic Monkey Assistant Animation
+    // -------------------------------
+    setInterval(function() {
+      if (!gamePaused && upgrades[1].quantity > 0) {
+        animateMonkeyAssistants();
+      }
+    }, 3000);
+    
+    // -------------------------------
+    // Boss Fight Functions
+    // -------------------------------
+    function triggerBossFight() {
+      bossFightActive = true;
+      bossHealth = 30;
+      document.getElementById('bossHealthDisplay').textContent = "Health: " + bossHealth;
+      // Hide game container
+      document.getElementById('gameContainer').style.display = 'none';
+      document.getElementById('bossFight').style.display = 'flex';
+      // Set a 10-second timer for the fight
+      bossFightTimer = setTimeout(() => {
+        if (bossFightActive) {
+          endBossFight(false);
+        }
+      }, 10000);
+    }
+    
+    function handleBossClick() {
+      if (!bossFightActive) return;
+      bossHealth--;
+      document.getElementById('bossHealthDisplay').textContent = "Health: " + bossHealth;
+      if (bossHealth <= 0) {
+        endBossFight(true);
+      }
+    }
+    
+    function endBossFight(success) {
+      bossFightActive = false;
+      clearTimeout(bossFightTimer);
+      document.getElementById('bossFight').style.display = 'none';
+      // Restore game container
+      document.getElementById('gameContainer').style.display = 'block';
+      if (success) {
+        autoProduction += 50;
+        displayPrompt("You defeated the Monkey King! He is now your slave and produces bananas for you!");
+      } else {
+        displayPrompt("You failed to defeat the Monkey King.");
+      }
+    }
+    
+    document.getElementById('bossFight').addEventListener('click', function() {
+      handleBossClick();
+    });
+    
+    // -------------------------------
+    // Banana Tree Click Event
+    // -------------------------------
+    const bananaTree = document.getElementById('bananaTree');
+    bananaTree.addEventListener('click', function(e) {
+      if (!gamePaused && !bossFightActive) {
+        bananaCount += clickValue;
+        updateDisplay();
+        animateBananaHarvest(e);
+      }
+    });
+    
+    // -------------------------------
+    // Auto-Production Interval
+    // -------------------------------
+    setInterval(function() {
+      if (!gamePaused && !bossFightActive) {
+        bananaCount += autoProduction;
+        updateDisplay();
+        if (autoProduction > 0) {
+          animateBananaHarvest();
+        }
+      }
+    }, 1000);
+    
+    // -------------------------------
+    // Story Mode Interactive Content
+    // -------------------------------
+    const storyPages = [
+      {
+        text: `<h1>Rise of the Bananas</h1>
+               <p>In the heart of a mysterious jungle, legends speak of a power hidden within the golden fruit. You are destined to harness this power.</p>`
+      },
+      {
+        text: `<p>The monkeys, guardians of the ancient groves, have long awaited a champion who can unite their strength with the magic of the bananas.</p>`
+      },
+      {
+        text: `<p>Before you embark on your quest, choose your destiny:</p>
+               <button onclick="choosePath('swift')">The Path of the Swift</button>
+               <button onclick="choosePath('mighty')">The Path of the Mighty</button>`
+      },
+      {
+        text: `<p>Your decision has been made. The jungle awakens as you prepare to harvest the power of the bananas.</p>
+               <button id="beginHarvestButton">Begin Your Harvest</button>`
+      }
+    ];
+    let currentStoryPage = 0;
+    
+    function displayStoryPage() {
+      const storyContainer = document.getElementById('storyContainer');
+      storyContainer.innerHTML = storyPages[currentStoryPage].text;
+      if (currentStoryPage === storyPages.length - 1) {
+        document.getElementById('beginHarvestButton').addEventListener('click', function() {
+          document.getElementById('storyMenu').style.display = 'none';
+          startGame();
+        });
+      }
+    }
+    
+    function choosePath(path) {
+      if (path === 'swift') {
+        costMultiplier = 1.4;
+        clickValue += 2;
+      } else if (path === 'mighty') {
+        costMultiplier = 1.6;
+        autoProduction += 10;
+      }
+      currentStoryPage++;
+      displayStoryPage();
+    }
+    
+    document.getElementById('storyNextButton').addEventListener('click', function() {
+      if (currentStoryPage < storyPages.length - 1) {
+        currentStoryPage++;
+        displayStoryPage();
+      }
+    });
+    
+    document.getElementById('backToMainMenu').addEventListener('click', function() {
+      document.getElementById('storyMenu').style.display = 'none';
+      document.getElementById('startMenu').style.display = 'flex';
+    });
+    
+    document.getElementById('startButton').addEventListener('click', function() {
+      document.getElementById('startMenu').style.display = 'none';
+      startGame();
+    });
+    
+    document.getElementById('storyModeButton').addEventListener('click', function() {
+      document.getElementById('startMenu').style.display = 'none';
+      currentStoryPage = 0;
+      storyModeActive = true;
+      costMultiplier = 1.5;
+      document.getElementById('storyMenu').style.display = 'flex';
+      displayStoryPage();
+    });
+    
+    document.getElementById('resumeButton').addEventListener('click', function() {
+      gamePaused = false;
+      document.getElementById('pauseMenu').style.display = 'none';
+    });
+    
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        togglePause();
+      }
+    });
+    
+    function togglePause() {
+      gamePaused = !gamePaused;
+      document.getElementById('pauseMenu').style.display = gamePaused ? 'flex' : 'none';
+    }
+    
+    // -------------------------------
+    // Display a Prompt Message
+    // -------------------------------
+    function displayPrompt(message) {
+      const promptDisplay = document.getElementById('promptDisplay');
+      promptDisplay.textContent = message;
+      promptDisplay.style.display = 'block';
+      setTimeout(() => {
+        promptDisplay.style.display = 'none';
+      }, 3000);
+    }
+    
+    // -------------------------------
+    // Check Prompts Conditions
+    // -------------------------------
+    function checkPrompts() {
+      storyPrompts.forEach(promptObj => {
+        if (!promptObj.triggered && promptObj.condition()) {
+          promptObj.triggered = true;
+          displayPrompt(promptObj.message);
+        }
+      });
+    }
+    
+    // -------------------------------
+    // Start Game Function
+    // -------------------------------
+    function startGame() {
+      initUpgrades();
+      initClickUpgrades();
+    }
+    
+    // -------------------------------
+    // Main Game Loop (for future updates)
+    // -------------------------------
+    function gameLoop() {
+      if (!gamePaused) {
+        // Future updates can be added here.
+      }
+      requestAnimationFrame(gameLoop);
+    }
+    requestAnimationFrame(gameLoop);
+    
+    // -------------------------------
+    // Debugging Tools (Press "D" to log state)
+    // -------------------------------
+    function debugLog() {
+      console.log("Banana Count:", bananaCount);
+      console.log("Auto Production:", autoProduction);
+      console.log("Click Value:", clickValue);
+      console.log("Upgrades:", upgrades);
+      console.log("Click Upgrades:", clickUpgrades);
+    }
+    
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'd' || e.key === 'D') {
+        debugLog();
+      }
+    });
+    
+    /* -----------------------------------------------------------------
+       Additional Filler Code for Clarity and Spacing
+    ------------------------------------------------------------------- */
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  </script>
+  
+  <!-- ===================================================================
+       Extra HTML Filler (for future expansions and spacing)
+       =================================================================== -->
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <!-- ===================================================================
+       End of HTML Document Filler
+       =================================================================== -->
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+</body>
+</html>
