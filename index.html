@@ -8,8 +8,6 @@
     /* ===================================================================
        Bananas & Monkeys Incremental Game Styles
        =================================================================== */
-
-    /* Reset styles */
     * {
       margin: 0;
       padding: 0;
@@ -23,9 +21,9 @@
     }
 
     /* ===================================================================
-       Start Menu Styles
+       Start Menu & Story Mode Menu Styles
        =================================================================== */
-    #startMenu {
+    #startMenu, #storyMenu {
       position: absolute;
       top: 0;
       left: 0;
@@ -40,13 +38,13 @@
       z-index: 1000;
     }
 
-    #startMenu h1 {
+    #startMenu h1, #storyMenu h1 {
       font-size: 60px;
-      margin-bottom: 40px;
+      margin-bottom: 20px;
       text-shadow: 2px 2px 5px #000;
     }
 
-    #startButton {
+    #startMenu button, #storyMenu button {
       padding: 15px 30px;
       font-size: 24px;
       border: none;
@@ -55,9 +53,10 @@
       border-radius: 10px;
       cursor: pointer;
       transition: background 0.3s ease;
+      margin: 10px;
     }
 
-    #startButton:hover {
+    #startMenu button:hover, #storyMenu button:hover {
       background: #FFB300;
     }
 
@@ -101,7 +100,7 @@
     }
 
     /* ===================================================================
-       Game Container Styles
+       Game Container & Score Board Styles
        =================================================================== */
     #gameContainer {
       position: relative;
@@ -110,9 +109,6 @@
       overflow: hidden;
     }
 
-    /* ===================================================================
-       Score Board Styles
-       =================================================================== */
     #scoreBoard {
       position: absolute;
       top: 10px;
@@ -126,7 +122,7 @@
     }
 
     /* ===================================================================
-       Banana Tree Styles (click to harvest bananas)
+       Banana Tree Styles
        =================================================================== */
     #bananaTree {
       position: absolute;
@@ -166,6 +162,18 @@
     }
 
     /* ===================================================================
+       Monkey Assistant Animation Styles
+       =================================================================== */
+    .monkeyAnimation {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      opacity: 0;
+      transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+      z-index: 650;
+    }
+
+    /* ===================================================================
        Upgrades Panel Styles
        =================================================================== */
     #upgradesPanel {
@@ -188,9 +196,6 @@
       text-align: center;
     }
 
-    /* ===================================================================
-       Upgrade Item Styles
-       =================================================================== */
     .upgradeItem {
       background: #fff;
       border: 2px solid #ccc;
@@ -233,27 +238,26 @@
         top: auto;
         bottom: 10px;
       }
-
       #scoreBoard {
         font-size: 20px;
       }
-
-      #startMenu h1 {
+      #startMenu h1, #storyMenu h1 {
         font-size: 40px;
       }
-
       #pauseMenu h1 {
         font-size: 35px;
       }
     }
 
     /* ===================================================================
-       End of Styles
+       Extra Filler Lines for Clarity
        =================================================================== */
-
-    /* -------------------------------------------------------------------
-       Additional filler lines for visual organization
-    -------------------------------------------------------------------- */
+    
+    
+    
+    
+    
+    
     
     
     
@@ -497,6 +501,20 @@
   <div id="startMenu">
     <h1>Bananas & Monkeys</h1>
     <button id="startButton">Start Game</button>
+    <button id="storyModeButton">Story Mode</button>
+  </div>
+
+  <!-- ===================================================================
+       Story Mode Menu
+       =================================================================== -->
+  <div id="storyMenu" style="display: none;">
+    <h1>Story Mode: Rise of the Bananas</h1>
+    <p style="max-width:600px; text-align:center; margin-bottom:20px;">
+      In a mysterious jungle where bananas hold the secret to ultimate power, you embark on a quest to unite the monkeys and conquer the banana empire.
+      Face tougher challenges and earn your place among legends. The journey will test your wit, strategy, and perseverance.
+    </p>
+    <button id="startStoryButton">Start Story Mode</button>
+    <button id="backToMainMenu">Back</button>
   </div>
 
   <!-- ===================================================================
@@ -513,7 +531,7 @@
   <div id="gameContainer">
     <!-- Score Board -->
     <div id="scoreBoard">
-      Bananas: <span id="bananaCount">0</span>
+      Bananas: <span id="bananaCount">0</span> | Click Value: <span id="clickValueDisplay">1</span>
     </div>
 
     <!-- Banana Tree (click here for banana harvesting) -->
@@ -539,25 +557,28 @@
     // -------------------------------
     // Game State Variables
     // -------------------------------
-    let bananaCount = 0;              // Total bananas harvested
-    let autoProduction = 0;           // Bananas produced automatically per second
-    let gamePaused = false;           // Whether the game is paused
+    let bananaCount = 0;
+    let autoProduction = 0;
+    let clickValue = 1;
+    let gamePaused = false;
+    let storyModeActive = false;
+    let costMultiplier = 1.3; // Default multiplier (upgrades are harder)
 
     // -------------------------------
-    // Upgrades Array
+    // Upgrades Array (11 items; note #11 is the Click Booster)
     // -------------------------------
-    // Contains 10 different upgrade objects
     const upgrades = [
-      { id: 1, name: 'Banana Tree', baseCost: 10, cost: 10, production: 1, quantity: 0 },
-      { id: 2, name: 'Monkey Assistant', baseCost: 50, cost: 50, production: 5, quantity: 0 },
-      { id: 3, name: 'Banana Plantation', baseCost: 200, cost: 200, production: 20, quantity: 0 },
-      { id: 4, name: 'Monkey Farm', baseCost: 1000, cost: 1000, production: 100, quantity: 0 },
-      { id: 5, name: 'Banana Shipping', baseCost: 5000, cost: 5000, production: 500, quantity: 0 },
-      { id: 6, name: 'Monkey Laboratory', baseCost: 20000, cost: 20000, production: 2000, quantity: 0 },
-      { id: 7, name: 'Banana Bank', baseCost: 100000, cost: 100000, production: 10000, quantity: 0 },
-      { id: 8, name: 'Monkey Convention', baseCost: 500000, cost: 500000, production: 50000, quantity: 0 },
-      { id: 9, name: 'Banana Empire', baseCost: 2000000, cost: 2000000, production: 200000, quantity: 0 },
-      { id: 10, name: 'Monkey King', baseCost: 10000000, cost: 10000000, production: 1000000, quantity: 0 }
+      { id: 1, name: 'Banana Tree', baseCost: 20, cost: 20, production: 1, quantity: 0 },
+      { id: 2, name: 'Monkey Assistant', baseCost: 100, cost: 100, production: 5, quantity: 0 },
+      { id: 3, name: 'Banana Plantation', baseCost: 400, cost: 400, production: 20, quantity: 0 },
+      { id: 4, name: 'Monkey Farm', baseCost: 2000, cost: 2000, production: 100, quantity: 0 },
+      { id: 5, name: 'Banana Shipping', baseCost: 10000, cost: 10000, production: 500, quantity: 0 },
+      { id: 6, name: 'Monkey Laboratory', baseCost: 40000, cost: 40000, production: 2000, quantity: 0 },
+      { id: 7, name: 'Banana Bank', baseCost: 200000, cost: 200000, production: 10000, quantity: 0 },
+      { id: 8, name: 'Monkey Convention', baseCost: 1000000, cost: 1000000, production: 50000, quantity: 0 },
+      { id: 9, name: 'Banana Empire', baseCost: 4000000, cost: 4000000, production: 200000, quantity: 0 },
+      { id: 10, name: 'Monkey King', baseCost: 20000000, cost: 20000000, production: 1000000, quantity: 0 },
+      { id: 11, name: 'Click Booster', baseCost: 30, cost: 30, clickBonus: 1, quantity: 0 }
     ];
 
     // -------------------------------
@@ -568,25 +589,23 @@
       upgradesList.innerHTML = ''; // Clear current list
 
       upgrades.forEach((upgrade, index) => {
-        // Create container for each upgrade item
         let upgradeDiv = document.createElement('div');
         upgradeDiv.className = 'upgradeItem';
         upgradeDiv.id = 'upgrade-' + upgrade.id;
-
-        // Insert upgrade details
-        upgradeDiv.innerHTML = `
-          <strong>${upgrade.name}</strong><br>
-          Cost: <span class="upgradeCost">${upgrade.cost}</span><br>
-          Owned: <span class="upgradeQuantity">${upgrade.quantity}</span><br>
-          Production: ${upgrade.production} bananas/sec
-        `;
+        let upgradeInfo = `<strong>${upgrade.name}</strong><br>
+                           Cost: <span class="upgradeCost">${upgrade.cost}</span><br>
+                           Owned: <span class="upgradeQuantity">${upgrade.quantity}</span><br>`;
+        if (upgrade.clickBonus !== undefined) {
+          upgradeInfo += `Click Bonus: ${upgrade.clickBonus} per click`;
+        } else {
+          upgradeInfo += `Production: ${upgrade.production} bananas/sec`;
+        }
+        upgradeDiv.innerHTML = upgradeInfo;
 
         // Add click event to purchase upgrade
         upgradeDiv.addEventListener('click', function() {
           purchaseUpgrade(index);
         });
-
-        // Append the upgrade to the list
         upgradesList.appendChild(upgradeDiv);
       });
     }
@@ -599,9 +618,13 @@
       if (bananaCount >= upgrade.cost) {
         bananaCount -= upgrade.cost;
         upgrade.quantity++;
-        autoProduction += upgrade.production;
-        // Increase cost exponentially
-        upgrade.cost = Math.floor(upgrade.baseCost * Math.pow(1.15, upgrade.quantity));
+        if (upgrade.clickBonus !== undefined) {
+          clickValue += upgrade.clickBonus;
+        } else {
+          autoProduction += upgrade.production;
+        }
+        // Increase cost using the multiplier (harder upgrades)
+        upgrade.cost = Math.floor(upgrade.baseCost * Math.pow(costMultiplier, upgrade.quantity));
         updateDisplay();
         initUpgrades();
       }
@@ -612,29 +635,20 @@
     // -------------------------------
     function updateDisplay() {
       document.getElementById('bananaCount').textContent = Math.floor(bananaCount);
+      document.getElementById('clickValueDisplay').textContent = clickValue;
     }
 
     // -------------------------------
-    // Banana Tree Click Event
-    // -------------------------------
-    const bananaTree = document.getElementById('bananaTree');
-    bananaTree.addEventListener('click', function() {
-      if (!gamePaused) {
-        bananaCount++;
-        updateDisplay();
-        animateBananaHarvest();
-      }
-    });
-
-    // -------------------------------
-    // Banana Harvest Animation Function
+    // Banana Harvest Animation Function (always originates from tree)
     // -------------------------------
     function animateBananaHarvest() {
+      const tree = document.getElementById('bananaTree');
+      const rect = tree.getBoundingClientRect();
       let banana = document.createElement('div');
       banana.className = 'bananaAnimation';
-      // Randomize horizontal position for fun effect
-      banana.style.left = (Math.random() * 80 + 10) + '%';
-      banana.style.top = '50%';
+      // Position the banana at the center of the tree (adjusted by half its size)
+      banana.style.left = (rect.left + rect.width / 2 - 50) + 'px';
+      banana.style.top = (rect.top + rect.height / 2 - 50) + 'px';
       document.getElementById('gameContainer').appendChild(banana);
       setTimeout(() => {
         banana.remove();
@@ -642,21 +656,85 @@
     }
 
     // -------------------------------
-    // Auto-Production of Bananas
+    // Monkey Assistant Animation Function
+    // -------------------------------
+    function animateMonkeyAssistant() {
+      const tree = document.getElementById('bananaTree');
+      const rect = tree.getBoundingClientRect();
+      let monkey = document.createElement('img');
+      monkey.src = 'https://i.pinimg.com/474x/da/0f/17/da0f17568351694b550182d8caac5c00.jpg'; // Replace with your desired monkey assistant image URL
+      monkey.className = 'monkeyAnimation';
+      monkey.style.left = (rect.left + rect.width / 2 - 50) + 'px';
+      monkey.style.top = (rect.top + rect.height - 100) + 'px';
+      document.getElementById('gameContainer').appendChild(monkey);
+      setTimeout(() => {
+        monkey.style.opacity = 1;
+        monkey.style.transform = 'translateY(-20px)';
+      }, 50);
+      setTimeout(() => {
+        monkey.style.opacity = 0;
+      }, 1000);
+      setTimeout(() => {
+        monkey.remove();
+      }, 1500);
+    }
+
+    // -------------------------------
+    // Banana Tree Click Event (clicks produce bananas using clickValue)
+    // -------------------------------
+    const bananaTree = document.getElementById('bananaTree');
+    bananaTree.addEventListener('click', function() {
+      if (!gamePaused) {
+        bananaCount += clickValue;
+        updateDisplay();
+        animateBananaHarvest();
+      }
+    });
+
+    // -------------------------------
+    // Auto-Production of Bananas (every 1 second; also animate)
     // -------------------------------
     setInterval(function() {
       if (!gamePaused) {
-        // Produce bananas over time based on autoProduction rate
-        bananaCount += autoProduction / 10;
+        bananaCount += autoProduction;
         updateDisplay();
+        if (autoProduction > 0) {
+          animateBananaHarvest();
+        }
       }
-    }, 100); // 100ms intervals
+    }, 1000);
 
     // -------------------------------
-    // Start Menu and Pause Menu Handlers
+    // Animate Monkey Assistant periodically if owned (every 3 seconds)
+    // -------------------------------
+    setInterval(function() {
+      if (!gamePaused && upgrades[1].quantity > 0) { // Upgrade with id=2 is Monkey Assistant
+        animateMonkeyAssistant();
+      }
+    }, 3000);
+
+    // -------------------------------
+    // Start Menu and Story Mode Handlers
     // -------------------------------
     document.getElementById('startButton').addEventListener('click', function() {
       document.getElementById('startMenu').style.display = 'none';
+      startGame();
+    });
+
+    document.getElementById('storyModeButton').addEventListener('click', function() {
+      document.getElementById('startMenu').style.display = 'none';
+      document.getElementById('storyMenu').style.display = 'flex';
+    });
+
+    document.getElementById('backToMainMenu').addEventListener('click', function() {
+      document.getElementById('storyMenu').style.display = 'none';
+      document.getElementById('startMenu').style.display = 'flex';
+    });
+
+    document.getElementById('startStoryButton').addEventListener('click', function() {
+      storyModeActive = true;
+      costMultiplier = 1.5; // In story mode, upgrades are even harder
+      document.getElementById('storyMenu').style.display = 'none';
       startGame();
     });
 
@@ -682,11 +760,11 @@
     // -------------------------------
     function startGame() {
       initUpgrades();
-      // You can add more initialization logic here
+      // Additional initialization can be added here
     }
 
     // -------------------------------
-    // Main Game Loop
+    // Main Game Loop (for future updates)
     // -------------------------------
     function gameLoop() {
       if (!gamePaused) {
@@ -702,6 +780,7 @@
     function debugLog() {
       console.log("Banana Count:", bananaCount);
       console.log("Auto Production:", autoProduction);
+      console.log("Click Value:", clickValue);
       console.log("Upgrades:", upgrades);
     }
 
@@ -711,10 +790,6 @@
         debugLog();
       }
     });
-
-    // ===================================================================
-    // End of Game Logic
-    // ===================================================================
 
     /* -----------------------------------------------------------------
        Additional Filler Code and Comments for Clarity and Spacing
@@ -959,125 +1034,7 @@
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
   </script>
-
-  <!-- ===================================================================
-       End of JavaScript Game Logic
-       =================================================================== -->
 
   <!-- ===================================================================
        Extra HTML Filler (for future expansions and spacing)
@@ -1213,52 +1170,8 @@
   
   
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   <!-- ===================================================================
-       End of Document Filler
+       End of HTML Document Filler
        =================================================================== -->
   
   
@@ -1291,136 +1204,5 @@
   
   
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  <!-- ====================== Filler Lines End Here ===================== -->
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  <!-- ===================================================================
-       End of HTML Document
-       =================================================================== -->
 </body>
 </html>
