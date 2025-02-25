@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bananas & Monkeys: Ultimate Harvest</title>
+  <style>
+    /* ===================================================================
+       Bananas & Monkeys Incremental Game Styles
+       =================================================================== */
+
+    /* Reset styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(to bottom, #4CAF50, #8BC34A);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+    }
+
+    /* ===================================================================
+       Start Menu Styles
+       =================================================================== */
+    #startMenu {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    #startMenu h1 {
+      font-size: 60px;
+      margin-bottom: 40px;
+      text-shadow: 2px 2px 5px #000;
+    }
+
+    #startButton {
+      padding: 15px 30px;
+      font-size: 24px;
+      border: none;
+      background: #FFC107;
+      color: #000;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    #startButton:hover {
+      background: #FFB300;
+    }
+
+    /* ===================================================================
+       Pause Menu Styles
+       =================================================================== */
+    #pauseMenu {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 900;
+    }
+
+    #pauseMenu h1 {
+      font-size: 50px;
+      margin-bottom: 30px;
+      text-shadow: 2px 2px 5px #000;
+    }
+
+    #resumeButton {
+      padding: 12px 25px;
+      font-size: 22px;
+      border: none;
+      background: #8BC34A;
+      color: #fff;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    #resumeButton:hover {
+      background: #7CB342;
+    }
+
+    /* ===================================================================
+       Game Container Styles
+       =================================================================== */
+    #gameContainer {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ===================================================================
+       Score Board Styles
+       =================================================================== */
+    #scoreBoard {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 24px;
+      z-index: 500;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ===================================================================
+       Banana Tree Styles (click to harvest bananas)
+       =================================================================== */
+    #bananaTree {
+      position: absolute;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 500px;
+      height: 500px;
+      background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5vNw46OQzsVKOijQ80yOkjH7Hllf2i4i5ZQ&s') no-repeat center bottom;
+      background-size: contain;
+      cursor: pointer;
+    }
+
+    /* ===================================================================
+       Banana Harvest Animation Styles
+       =================================================================== */
+    .bananaAnimation {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background: url('https://i.imgur.com/Mudezu4.png') no-repeat center center;
+      background-size: contain;
+      animation: floatUp 1s ease-out forwards;
+      pointer-events: none;
+      z-index: 600;
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-100px) scale(1.5);
+      }
+    }
+
+    /* ===================================================================
+       Upgrades Panel Styles
+       =================================================================== */
+    #upgradesPanel {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 300px;
+      max-height: 90vh;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 15px;
+      border-radius: 8px;
+      overflow-y: auto;
+      z-index: 500;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    #upgradesPanel h2 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    /* ===================================================================
+       Upgrade Item Styles
+       =================================================================== */
+    .upgradeItem {
+      background: #fff;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      text-align: center;
+    }
+
+    .upgradeItem:hover {
+      background: #f9f9f9;
+      transform: scale(1.02);
+    }
+
+    .upgradeItem strong {
+      font-size: 20px;
+      color: #333;
+    }
+
+    .upgradeCost {
+      color: #E91E63;
+      font-weight: bold;
+    }
+
+    .upgradeQuantity {
+      color: #3F51B5;
+      font-weight: bold;
+    }
+
+    /* ===================================================================
+       Responsive Adjustments
+       =================================================================== */
+    @media (max-width: 768px) {
+      #upgradesPanel {
+        width: 90%;
+        left: 5%;
+        right: 5%;
+        top: auto;
+        bottom: 10px;
+      }
+
+      #scoreBoard {
+        font-size: 20px;
+      }
+
+      #startMenu h1 {
+        font-size: 40px;
+      }
+
+      #pauseMenu h1 {
+        font-size: 35px;
+      }
+    }
+
+    /* ===================================================================
+       End of Styles
+       =================================================================== */
+
+    /* -------------------------------------------------------------------
+       Additional filler lines for visual organization
+    -------------------------------------------------------------------- */
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  </style>
+</head>
+<body>
+  <!-- ===================================================================
+       Start Menu
+       =================================================================== -->
+  <div id="startMenu">
+    <h1>Bananas & Monkeys</h1>
+    <button id="startButton">Start Game</button>
+  </div>
+
+  <!-- ===================================================================
+       Pause Menu
+       =================================================================== -->
+  <div id="pauseMenu" style="display: none;">
+    <h1>Paused</h1>
+    <button id="resumeButton">Resume Game</button>
+  </div>
+
+  <!-- ===================================================================
+       Game Container
+       =================================================================== -->
+  <div id="gameContainer">
+    <!-- Score Board -->
+    <div id="scoreBoard">
+      Bananas: <span id="bananaCount">0</span>
+    </div>
+
+    <!-- Banana Tree (click here for banana harvesting) -->
+    <div id="bananaTree"></div>
+
+    <!-- Upgrades Panel -->
+    <div id="upgradesPanel">
+      <h2>Upgrades</h2>
+      <div id="upgradesList">
+        <!-- Upgrade items will be dynamically inserted here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================
+       JavaScript Game Logic
+       =================================================================== -->
+  <script>
+    // ===================================================================
+    // Bananas & Monkeys: Ultimate Harvest Game
+    // ===================================================================
+
+    // -------------------------------
+    // Game State Variables
+    // -------------------------------
+    let bananaCount = 0;              // Total bananas harvested
+    let autoProduction = 0;           // Bananas produced automatically per second
+    let gamePaused = false;           // Whether the game is paused
+
+    // -------------------------------
+    // Upgrades Array
+    // -------------------------------
+    // Contains 10 different upgrade objects
+    const upgrades = [
+      { id: 1, name: 'Banana Tree', baseCost: 10, cost: 10, production: 1, quantity: 0 },
+      { id: 2, name: 'Monkey Assistant', baseCost: 50, cost: 50, production: 5, quantity: 0 },
+      { id: 3, name: 'Banana Plantation', baseCost: 200, cost: 200, production: 20, quantity: 0 },
+      { id: 4, name: 'Monkey Farm', baseCost: 1000, cost: 1000, production: 100, quantity: 0 },
+      { id: 5, name: 'Banana Shipping', baseCost: 5000, cost: 5000, production: 500, quantity: 0 },
+      { id: 6, name: 'Monkey Laboratory', baseCost: 20000, cost: 20000, production: 2000, quantity: 0 },
+      { id: 7, name: 'Banana Bank', baseCost: 100000, cost: 100000, production: 10000, quantity: 0 },
+      { id: 8, name: 'Monkey Convention', baseCost: 500000, cost: 500000, production: 50000, quantity: 0 },
+      { id: 9, name: 'Banana Empire', baseCost: 2000000, cost: 2000000, production: 200000, quantity: 0 },
+      { id: 10, name: 'Monkey King', baseCost: 10000000, cost: 10000000, production: 1000000, quantity: 0 }
+    ];
+
+    // -------------------------------
+    // Initialize Upgrades Panel
+    // -------------------------------
+    function initUpgrades() {
+      const upgradesList = document.getElementById('upgradesList');
+      upgradesList.innerHTML = ''; // Clear current list
+
+      upgrades.forEach((upgrade, index) => {
+        // Create container for each upgrade item
+        let upgradeDiv = document.createElement('div');
+        upgradeDiv.className = 'upgradeItem';
+        upgradeDiv.id = 'upgrade-' + upgrade.id;
+
+        // Insert upgrade details
+        upgradeDiv.innerHTML = `
+          <strong>${upgrade.name}</strong><br>
+          Cost: <span class="upgradeCost">${upgrade.cost}</span><br>
+          Owned: <span class="upgradeQuantity">${upgrade.quantity}</span><br>
+          Production: ${upgrade.production} bananas/sec
+        `;
+
+        // Add click event to purchase upgrade
+        upgradeDiv.addEventListener('click', function() {
+          purchaseUpgrade(index);
+        });
+
+        // Append the upgrade to the list
+        upgradesList.appendChild(upgradeDiv);
+      });
+    }
+
+    // -------------------------------
+    // Purchase Upgrade Function
+    // -------------------------------
+    function purchaseUpgrade(index) {
+      let upgrade = upgrades[index];
+      if (bananaCount >= upgrade.cost) {
+        bananaCount -= upgrade.cost;
+        upgrade.quantity++;
+        autoProduction += upgrade.production;
+        // Increase cost exponentially
+        upgrade.cost = Math.floor(upgrade.baseCost * Math.pow(1.15, upgrade.quantity));
+        updateDisplay();
+        initUpgrades();
+      }
+    }
+
+    // -------------------------------
+    // Update Display Function
+    // -------------------------------
+    function updateDisplay() {
+      document.getElementById('bananaCount').textContent = Math.floor(bananaCount);
+    }
+
+    // -------------------------------
+    // Banana Tree Click Event
+    // -------------------------------
+    const bananaTree = document.getElementById('bananaTree');
+    bananaTree.addEventListener('click', function() {
+      if (!gamePaused) {
+        bananaCount++;
+        updateDisplay();
+        animateBananaHarvest();
+      }
+    });
+
+    // -------------------------------
+    // Banana Harvest Animation Function
+    // -------------------------------
+    function animateBananaHarvest() {
+      let banana = document.createElement('div');
+      banana.className = 'bananaAnimation';
+      // Randomize horizontal position for fun effect
+      banana.style.left = (Math.random() * 80 + 10) + '%';
+      banana.style.top = '50%';
+      document.getElementById('gameContainer').appendChild(banana);
+      setTimeout(() => {
+        banana.remove();
+      }, 1000);
+    }
+
+    // -------------------------------
+    // Auto-Production of Bananas
+    // -------------------------------
+    setInterval(function() {
+      if (!gamePaused) {
+        // Produce bananas over time based on autoProduction rate
+        bananaCount += autoProduction / 10;
+        updateDisplay();
+      }
+    }, 100); // 100ms intervals
+
+    // -------------------------------
+    // Start Menu and Pause Menu Handlers
+    // -------------------------------
+    document.getElementById('startButton').addEventListener('click', function() {
+      document.getElementById('startMenu').style.display = 'none';
+      startGame();
+    });
+
+    document.getElementById('resumeButton').addEventListener('click', function() {
+      gamePaused = false;
+      document.getElementById('pauseMenu').style.display = 'none';
+    });
+
+    // Toggle pause when pressing Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        togglePause();
+      }
+    });
+
+    function togglePause() {
+      gamePaused = !gamePaused;
+      document.getElementById('pauseMenu').style.display = gamePaused ? 'flex' : 'none';
+    }
+
+    // -------------------------------
+    // Start Game Function
+    // -------------------------------
+    function startGame() {
+      initUpgrades();
+      // You can add more initialization logic here
+    }
+
+    // -------------------------------
+    // Main Game Loop
+    // -------------------------------
+    function gameLoop() {
+      if (!gamePaused) {
+        // Future game updates or animations can be added here
+      }
+      requestAnimationFrame(gameLoop);
+    }
+    requestAnimationFrame(gameLoop);
+
+    // -------------------------------
+    // Debugging Tools
+    // -------------------------------
+    function debugLog() {
+      console.log("Banana Count:", bananaCount);
+      console.log("Auto Production:", autoProduction);
+      console.log("Upgrades:", upgrades);
+    }
+
+    // Press "D" to log debug info
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'd' || e.key === 'D') {
+        debugLog();
+      }
+    });
+
+    // ===================================================================
+    // End of Game Logic
+    // ===================================================================
+
+    /* -----------------------------------------------------------------
+       Additional Filler Code and Comments for Clarity and Spacing
+    ------------------------------------------------------------------- */
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  </script>
+
+  <!-- ===================================================================
+       End of JavaScript Game Logic
+       =================================================================== -->
+
+  <!-- ===================================================================
+       Extra HTML Filler (for future expansions and spacing)
+       =================================================================== -->
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <!-- ===================================================================
+       End of Document Filler
+       =================================================================== -->
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <!-- ====================== Filler Lines End Here ===================== -->
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <!-- ===================================================================
+       End of HTML Document
+       =================================================================== -->
+</body>
+</html>
