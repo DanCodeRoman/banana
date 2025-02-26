@@ -163,6 +163,23 @@
       border: 2px solid #FFC107;
     }
     
+    /* Monkey Business Modal */
+    #monkeyBusinessModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1500;
+      justify-content: center;
+      align-items: center;
+    }
+    #monkeyBusinessModal .modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    
     /* Responsive */
     @media (max-width: 768px) {
       #scoreBoard { font-size: 20px; }
@@ -245,8 +262,17 @@
       <div class="reopen-btn" data-target="harvestingUpgradesPanel">Harvesting</div>
     </div>
     
-    <!-- Monkey Characters Panel (hidden until empire grows) -->
+    <!-- Monkey Characters Panel (Business deals appear here) -->
     <div id="monkeyCharactersPanel" style="display: none;"></div>
+  </div>
+
+  <!-- Monkey Business Modal -->
+  <div id="monkeyBusinessModal">
+    <div class="modal-content">
+      <p id="monkeyBusinessMessage"></p>
+      <button id="monkeyDealAccept">Accept Deal</button>
+      <button id="monkeyDealDecline">Decline Deal</button>
+    </div>
   </div>
 
   <script>
@@ -260,8 +286,66 @@
     const dayLength = 180; // seconds per day
     const dayPhaseDuration = 120; // first 120 sec = day; remaining = night
     let isNight = false;
-    let monkeyCharactersDisplayed = false;
     
+    // For monkey business interactions
+    const monkeyCharacters = [
+      {
+        name: "Cheeky Charlie",
+        image: "https://www.pngplay.com/wp-content/uploads/9/Chimpanzee-Background-PNG.png",
+        dialogues: [
+          "Hey, want a banana discount?",
+          "I sell bananas at the best price in town!",
+          "Bananas? More like bonanas, am I right?"
+        ],
+        added: false,
+        businessDone: false
+      },
+      {
+        name: "Banana Bob",
+        image: "https://www.pngplay.com/wp-content/uploads/9/Chimpanzee-Background-PNG.png",
+        dialogues: [
+          "Ever seen a banana flip? Watch this!",
+          "My banana jokes will peel you away!",
+          "I'm the top banana in this empire!"
+        ],
+        added: false,
+        businessDone: false
+      },
+      {
+        name: "Funky Frank",
+        image: "https://www.pngplay.com/wp-content/uploads/9/Chimpanzee-Background-PNG.png",
+        dialogues: [
+          "Let's boogie and trade some bananas!",
+          "Funky beats and bananas, that's the deal!",
+          "Your bananas never looked so funky!"
+        ],
+        added: false,
+        businessDone: false
+      },
+      {
+        name: "Jungle Joe",
+        image: "https://www.pngplay.com/wp-content/uploads/9/Chimpanzee-Background-PNG.png",
+        dialogues: [
+          "In the jungle, the mighty banana roars!",
+          "Trade bananas with me and rule the jungle!",
+          "Bananas are the currency of the wild!"
+        ],
+        added: false,
+        businessDone: false
+      },
+      {
+        name: "Silly Sam",
+        image: "https://www.pngplay.com/wp-content/uploads/9/Chimpanzee-Background-PNG.png",
+        dialogues: [
+          "Did you hear the one about the banana and the monkey?",
+          "Silly bananas, silly monkeys, it's all a laugh!",
+          "Come on, join my banana circus!"
+        ],
+        added: false,
+        businessDone: false
+      }
+    ];
+    // Upgrade and click upgrade definitions
     const upgrades = [
       { id: 1, name: 'Banana Tree', baseCost: 20, cost: 20, production: 1, quantity: 0 },
       { id: 2, name: 'Monkey Assistant', baseCost: 100, cost: 100, production: 5, quantity: 0 },
@@ -314,90 +398,7 @@
       { condition: () => bananaCount >= 10000, message: "The jungle roars with the power of your harvest.", triggered: false }
     ];
     
-    // Define monkey business characters (funny names, placeholder images, and dialogues)
-    const monkeyCharacters = [
-      {
-        name: "Cheeky Charlie",
-        image: "https://via.placeholder.com/100?text=Cheeky+Charlie",
-        dialogues: [
-          "Hey, want a banana discount?",
-          "I sell bananas at the best price in town!",
-          "Bananas? More like bonanas, am I right?"
-        ]
-      },
-      {
-        name: "Banana Bob",
-        image: "https://via.placeholder.com/100?text=Banana+Bob",
-        dialogues: [
-          "Ever seen a banana flip? Watch this!",
-          "My banana jokes will peel you away!",
-          "I'm the top banana in this empire!"
-        ]
-      },
-      {
-        name: "Funky Frank",
-        image: "https://via.placeholder.com/100?text=Funky+Frank",
-        dialogues: [
-          "Let's boogie and trade some bananas!",
-          "Funky beats and bananas, that's the deal!",
-          "Your bananas never looked so funky!"
-        ]
-      },
-      {
-        name: "Jungle Joe",
-        image: "https://via.placeholder.com/100?text=Jungle+Joe",
-        dialogues: [
-          "In the jungle, the mighty banana roars!",
-          "Trade bananas with me and rule the jungle!",
-          "Bananas are the currency of the wild!"
-        ]
-      },
-      {
-        name: "Silly Sam",
-        image: "https://via.placeholder.com/100?text=Silly+Sam",
-        dialogues: [
-          "Did you hear the one about the banana and the monkey?",
-          "Silly bananas, silly monkeys, it's all a laugh!",
-          "Come on, join my banana circus!"
-        ]
-      }
-    ];
-    const newsDialogues = [
-      "Breaking: Monkeys protest over stale bananas!",
-      "Banana prices skyrocket as trees start whispering secrets.",
-      "Jungle in uproar: Rain delays banana shipments.",
-      "Local monkey spotted leading a banana parade.",
-      "Scientists baffled by banana flavor changes overnight.",
-      "Rain or shine, bananas still taste divine.",
-      "Monkey stock market crashes after banana overproduction.",
-      "Incredible: Banana empire expands to new treetops.",
-      "Weather alert: Sudden rain dampens monkey spirits.",
-      "Exclusive: Banana workers demand extra coconut breaks.",
-      "Breaking: Jungle news confirms: bananas are alive!",
-      "Monkey union strikes over extra slippery peels.",
-      "Mystery solved: Bananas are secretly powering the jungle.",
-      "Alert: Tropical storm predicted – bananas brace for impact.",
-      "Bizarre: Monkeys adopt a new dance after harvest.",
-      "Rumor: The Monkey King is planning a banana festival.",
-      "Jungle gossip: Banana banks now offer interest in peels.",
-      "Alert: Rainfall expected to double banana discounts.",
-      "Monkeys rejoice as the banana harvest hits record highs.",
-      "Update: Banana shipments delayed by mysterious fog.",
-      "Exclusive: New banana flavor takes the jungle by storm.",
-      "Breaking: Monkey workers celebrate a surprise holiday.",
-      "Jungle news: Local vines vote to become banana trees.",
-      "Rumor: The jungle's bananas are organizing a talent show.",
-      "Alert: Banana production takes a hit as monkeys nap.",
-      "Monkeys debate: Is the banana king really a king?",
-      "Update: Rainy days slow down the banana frenzy.",
-      "Breaking: Banana workers form a union for extra breaks.",
-      "Jungle update: Monkeys claim they’ve discovered golden bananas.",
-      "Exclusive: Banana harvest expected to be extra juicy today."
-    ];
-
-    /*==============================
-      Save & Load Game State
-    ==============================*/
+    // Save & Load Game State
     function saveGameState() {
       localStorage.setItem('bananaCount', bananaCount);
       localStorage.setItem('clickValue', clickValue);
@@ -449,7 +450,7 @@
         clickUpgradesList.appendChild(div);
       });
     }
-
+    
     /*==============================
       Purchase & Display Functions
     ==============================*/
@@ -484,9 +485,9 @@
       document.getElementById('clickValueDisplay').textContent = clickValue;
       document.getElementById('dayDisplay').textContent = daysPassed + 1;
       updateMonkeyDisplay();
+      updateMonkeyCharacters();
       checkPrompts();
       saveGameState();
-      updateMonkeyCharacters(); // update empire characters when needed
     }
     function updateMonkeyDisplay() {
       const monkeyDisplay = document.getElementById('monkeyDisplay');
@@ -683,6 +684,38 @@
       News Reel
     ==============================*/
     let newsIndex = 0;
+    const newsDialogues = [
+      "Breaking: Monkeys protest over stale bananas!",
+      "Banana prices skyrocket as trees start whispering secrets.",
+      "Jungle in uproar: Rain delays banana shipments.",
+      "Local monkey spotted leading a banana parade.",
+      "Scientists baffled by banana flavor changes overnight.",
+      "Rain or shine, bananas still taste divine.",
+      "Monkey stock market crashes after banana overproduction.",
+      "Incredible: Banana empire expands to new treetops.",
+      "Weather alert: Sudden rain dampens monkey spirits.",
+      "Exclusive: Banana workers demand extra coconut breaks.",
+      "Breaking: Jungle news confirms: bananas are alive!",
+      "Monkey union strikes over extra slippery peels.",
+      "Mystery solved: Bananas are secretly powering the jungle.",
+      "Alert: Tropical storm predicted – bananas brace for impact.",
+      "Bizarre: Monkeys adopt a new dance after harvest.",
+      "Rumor: The Monkey King is planning a banana festival.",
+      "Jungle gossip: Banana banks now offer interest in peels.",
+      "Alert: Rainfall expected to double banana discounts.",
+      "Monkeys rejoice as the banana harvest hits record highs.",
+      "Update: Banana shipments delayed by mysterious fog.",
+      "Exclusive: New banana flavor takes the jungle by storm.",
+      "Breaking: Monkey workers celebrate a surprise holiday.",
+      "Jungle news: Local vines vote to become banana trees.",
+      "Rumor: The jungle's bananas are organizing a talent show.",
+      "Alert: Banana production takes a hit as monkeys nap.",
+      "Monkeys debate: Is the banana king really a king?",
+      "Update: Rainy days slow down the banana frenzy.",
+      "Breaking: Banana workers form a union for extra breaks.",
+      "Jungle update: Monkeys claim they’ve discovered golden bananas.",
+      "Exclusive: Banana harvest expected to be extra juicy today."
+    ];
     function updateNewsReel() {
       const newsContent = document.getElementById('newsContent');
       newsContent.innerText = newsDialogues[newsIndex];
@@ -692,25 +725,79 @@
     setInterval(updateNewsReel, 15000);
 
     /*==============================
-      Monkey Characters (Empire Business)
+      Monkey Characters (Business Deals)
     ==============================*/
+    // This function adds monkey business icons based on thresholds.
     function updateMonkeyCharacters() {
-      // Show characters once bananaCount reaches 5000 (if not already displayed)
-      if(bananaCount >= 5000 && !monkeyCharactersDisplayed) {
-        const panel = document.getElementById('monkeyCharactersPanel');
-        panel.style.display = 'flex';
-        monkeyCharacters.forEach(monkey => {
+      const monkeyThresholds = [5000, 10000, 15000, 20000, 25000];
+      const panel = document.getElementById('monkeyCharactersPanel');
+      // Display the panel if any monkey is available.
+      if(bananaCount >= monkeyThresholds[0]) panel.style.display = 'flex';
+      monkeyCharacters.forEach((monkey, index) => {
+        if (bananaCount >= monkeyThresholds[index] && !monkey.added) {
           let img = document.createElement('img');
           img.src = monkey.image;
           img.title = monkey.name;
+          img.style.cursor = "pointer";
           img.addEventListener('click', () => {
-            const dialogue = monkey.dialogues[Math.floor(Math.random() * monkey.dialogues.length)];
-            displayPrompt(`${monkey.name}: ${dialogue}`);
+            if (!monkey.businessDone) {
+              handleMonkeyBusiness(monkey, img);
+            }
           });
           panel.appendChild(img);
-        });
-        monkeyCharactersDisplayed = true;
+          monkey.added = true;
+        }
+      });
+    }
+    
+    // Generate a random deal for the monkey business interaction.
+    function generateMonkeyDeal(monkey) {
+      let isBeneficial = Math.random() < 0.6; // 60% chance beneficial
+      let cost = Math.floor(Math.random() * 1500) + 500; // between 500 and 2000
+      let bonus = Math.floor(Math.random() * 400) + 100; // between 100 and 500 bonus
+      if (!isBeneficial) {
+          bonus = - (Math.floor(Math.random() * 400) + 100); // penalty deal
       }
+      let message;
+      if (isBeneficial) {
+          message = `${monkey.name} offers you a deal: Spend ${cost} bananas to gain ${bonus} bonus bananas instantly. Do you accept?`;
+      } else {
+          message = `${monkey.name} warns: "I have a risky deal for you: Pay ${cost} bananas, and if you accept, you'll lose ${-bonus} bananas immediately. Do you accept?"`;
+      }
+      return { cost, bonus, message, beneficial: isBeneficial };
+    }
+    
+    // Handle the business interaction when a monkey is clicked.
+    function handleMonkeyBusiness(monkey, imgElement) {
+      let deal = generateMonkeyDeal(monkey);
+      let modal = document.getElementById('monkeyBusinessModal');
+      let messageP = document.getElementById('monkeyBusinessMessage');
+      messageP.textContent = deal.message;
+      modal.style.display = 'flex';
+      
+      let acceptBtn = document.getElementById('monkeyDealAccept');
+      let declineBtn = document.getElementById('monkeyDealDecline');
+      
+      acceptBtn.onclick = function() {
+        if (bananaCount >= deal.cost) {
+          bananaCount -= deal.cost;
+          bananaCount += deal.bonus; // bonus might be negative (penalty)
+          displayPrompt(`${monkey.name}: Deal completed.`);
+        } else {
+          displayPrompt(`${monkey.name}: You don't have enough bananas for this deal.`);
+        }
+        modal.style.display = 'none';
+        monkey.businessDone = true;
+        imgElement.style.opacity = 0.5;
+        updateDisplay();
+      };
+      declineBtn.onclick = function() {
+        displayPrompt(`${monkey.name}: Maybe next time.`);
+        modal.style.display = 'none';
+        monkey.businessDone = true;
+        imgElement.style.opacity = 0.5;
+        updateDisplay();
+      };
     }
     
     /*==============================
